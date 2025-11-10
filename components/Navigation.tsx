@@ -1,7 +1,7 @@
-"use client"
-
 import NavigationClient from "./NavigationClient"
+import { fetchAppData } from "@/lib/amplifyServerUtils"
 
-export default function Navigation() {
-  return <NavigationClient user={null} />
+export default async function Navigation() {
+  const appData = await fetchAppData()
+  return <NavigationClient />
 }

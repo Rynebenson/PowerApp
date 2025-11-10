@@ -195,6 +195,72 @@ export default $config({
     }, {
       auth: { jwt: { authorizer: authorizer.id } },
     });
+
+    api.route("GET /users/profile", {
+      handler: "backend/functions/users/profile.handler",
+      link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("GET /users/app-data", {
+      handler: "backend/functions/users/app-data.handler",
+      link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("GET /orgs/details", {
+      handler: "backend/functions/orgs/details.handler",
+      link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("GET /orgs/list", {
+      handler: "backend/functions/orgs/list.handler",
+      link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("POST /orgs/create", {
+      handler: "backend/functions/orgs/create.handler",
+      link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("POST /orgs/switch", {
+      handler: "backend/functions/orgs/switch.handler",
+      link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
     
     const web = new sst.aws.Nextjs("MyWeb", {
       ...(webCertArn && {
