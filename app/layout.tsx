@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./providers";
 import { Inter } from "next/font/google";
+import Navigation from "@/components/Navigation";
+import Header from "@/components/Header";
+import BottomNav from "@/components/BottomNav";
+import SetupFlow from "@/components/SetupFlow";
+import { SidebarInset } from "@/components/ui/sidebar";
 
 const inter = Inter({ display: "swap", subsets: ["latin"] })
 
@@ -52,7 +57,16 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
         <Providers>
-          {children}
+          <Navigation />
+          <SidebarInset>
+            <Header />
+            <main className="pb-20 md:pb-0 overflow-hidden">
+              <SetupFlow>
+                {children}
+              </SetupFlow>
+            </main>
+            <BottomNav />
+          </SidebarInset>
         </Providers>
       </body>
     </html>

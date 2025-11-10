@@ -6,6 +6,7 @@ export interface User {
   email: string;
   name?: string;
   picture?: string;
+  active_org_id?: string;
   created_at: string;
   updated_at: string;
 }
@@ -17,5 +18,6 @@ export interface UserPreferences {
   user_id: string;
   theme?: "light" | "dark" | "system";
   notifications_enabled?: boolean;
+  timezone?: string;
   updated_at: string;
 }

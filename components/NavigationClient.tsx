@@ -35,15 +35,13 @@ import {
   LogOut,
 } from "lucide-react"
 import Link from "next/link"
-import { AuthUser, signOut, fetchUserAttributes } from "aws-amplify/auth"
+import { AuthUser, signOut, fetchUserAttributes, fetchAuthSession } from "aws-amplify/auth"
 import { usePathname } from "next/navigation"
 import useSWR from "swr"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useSidebar } from "@/components/ui/sidebar"
-
-interface NavigationClientProps {
-  user: AuthUser | null
-}
+import OrgSwitcher from "@/components/OrgSwitcher"
+import { useState } from "react"
 
 const MENU_ITEMS = [
   { icon: Home, href: "/", label: "Dashboard" },
@@ -58,11 +56,31 @@ const fetchUser = async () => {
   return attributes
 }
 
-export default function NavigationClient({ user: _user }: NavigationClientProps) {
+const fetchAppData = async () => {
+  const session = await fetchAuthSession()
+  const token = session.tokens?.idToken?.toString()
+  
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/app-data`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  
+  if (!response.ok) throw new Error('Failed to fetch app data')
+  return response.json()
+}
+
+export default function NavigationClient() {
   const pathname = usePathname()
-  const { data: userAttributes, isLoading } = useSWR('user-attributes', fetchUser)
+  const { data: userAttributes, isLoading: userLoading } = useSWR('user-attributes', fetchUser)
+  const { data: appData, mutate: mutateAppData } = useSWR('app-data', fetchAppData)
+  const [showOnboarding, setShowOnboarding] = useState(false)
   const isMobile = useIsMobile()
   const { setOpenMobile } = useSidebar()
+
+  const organizations = appData?.organizations || []
+  const userProfile = appData?.user
+  const activeOrg = organizations.find((org: { id: string }) => org.id === userProfile?.active_org_id)
 
   const handleSignOut = async () => {
     await signOut()
@@ -78,18 +96,37 @@ export default function NavigationClient({ user: _user }: NavigationClientProps)
   const displayName = userAttributes?.name || userAttributes?.email?.split('@')[0] || "User"
   const initials = userAttributes?.name?.split(" ").map((n) => n[0]).join("").toUpperCase() || userAttributes?.email?.charAt(0).toUpperCase() || "U"
 
+  const handleSwitchOrg = async (org: { id: string }) => {
+    const session = await fetchAuthSession()
+    const token = session.tokens?.idToken?.toString()
+    
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orgs/switch`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ org_id: org.id }),
+    })
+    
+    await mutateAppData()
+  }
+
+  const handleCreateOrg = () => {
+    setShowOnboarding(true)
+    window.dispatchEvent(new CustomEvent('show-onboarding'))
+  }
+
   return (
     <Sidebar>
       <SidebarHeader className="px-4 py-3">
-        <div className="flex items-center gap-3 w-full h-12 px-2">
-          <Avatar className="size-8 ring-2 ring-white/10">
-            <AvatarFallback className="text-sm font-semibold bg-blue-600 text-white">PA</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 text-left">
-            <div className="font-medium">PowerApp</div>
-            <div className="text-xs text-muted-foreground">Chatbot Management</div>
-          </div>
-        </div>
+        <OrgSwitcher
+          activeOrg={activeOrg}
+          organizations={organizations}
+          loading={false}
+          onSwitchOrg={handleSwitchOrg}
+          onCreateOrg={handleCreateOrg}
+        />
       </SidebarHeader>
 
       <SidebarContent className="p-2">
@@ -132,7 +169,7 @@ export default function NavigationClient({ user: _user }: NavigationClientProps)
           </SidebarMenuItem>
         </SidebarMenu>
         <div className="border-t pt-2">
-        {isLoading ? (
+        {userLoading ? (
           <div className="flex items-center gap-2 px-2 py-3">
             <Skeleton className="size-8 rounded-full" />
             <div className="flex flex-col gap-1 flex-1">
