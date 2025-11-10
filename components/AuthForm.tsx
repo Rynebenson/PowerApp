@@ -140,8 +140,8 @@ export default function AuthForm() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      <div className="w-full lg:max-w-md bg-background lg:border-r flex flex-col justify-center px-8 py-12 relative">
-        <div className="absolute top-8 left-8">
+      <div className="w-full lg:max-w-md bg-background lg:border-r flex flex-col justify-center px-8 py-12 lg:py-12 relative">
+        <div className="mb-12 lg:absolute lg:top-8 lg:left-8 lg:mb-0">
           <Image 
             src={Logo}
             alt="PowerApp"

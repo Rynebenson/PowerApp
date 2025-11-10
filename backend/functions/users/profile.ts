@@ -13,13 +13,14 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
         return {
           statusCode: 200,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(user || {})
+          body: JSON.stringify(user || { active_org_id: null })
         };
       } catch (error) {
+        console.error('Error fetching user profile:', error);
         return {
-          statusCode: 500,
+          statusCode: 200,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ error })
+          body: JSON.stringify({ active_org_id: null })
         };
       }
 

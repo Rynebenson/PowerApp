@@ -10,6 +10,8 @@ export default function OrganizationPage() {
   const [orgData, setOrgData] = useState<{
     organization?: {
       name: string;
+      email?: string;
+      phone?: string;
       created_at: string;
     };
     members?: Array<{
@@ -17,6 +19,11 @@ export default function OrganizationPage() {
       email: string;
       role?: string;
     }>;
+    activeOrg?: {
+      id: string;
+      name: string;
+      role: string;
+    };
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,13 +37,28 @@ export default function OrganizationPage() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const token = session.tokens?.idToken?.toString();
 
-      const response = await fetch(`${apiUrl}/orgs/details`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const [appDataRes, detailsRes] = await Promise.all([
+        fetch(`${apiUrl}/users/app-data`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${apiUrl}/orgs/details`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      ]);
 
-      if (response.ok) {
-        const data = await response.json();
-        setOrgData(data);
+      if (appDataRes.ok && detailsRes.ok) {
+        const appData = await appDataRes.json();
+        const details = await detailsRes.json();
+        
+        const activeOrg = appData.organizations?.find(
+          (org: { id: string }) => org.id === appData.user?.active_org_id
+        );
+        
+        setOrgData({
+          organization: details.organization,
+          members: details.members,
+          activeOrg
+        });
       }
     } catch (error) {
       console.error("Error loading organization:", error);
@@ -63,16 +85,31 @@ export default function OrganizationPage() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-32 w-full" />
           ) : orgData?.organization ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div>
                 <span className="font-medium">Name:</span> {orgData.organization.name}
               </div>
+              {orgData.organization.email && (
+                <div>
+                  <span className="font-medium">Email:</span> {orgData.organization.email}
+                </div>
+              )}
+              {orgData.organization.phone && (
+                <div>
+                  <span className="font-medium">Phone:</span> {orgData.organization.phone}
+                </div>
+              )}
               <div>
                 <span className="font-medium">Created:</span>{" "}
                 {new Date(orgData.organization.created_at).toLocaleDateString()}
               </div>
+              {orgData.activeOrg && (
+                <div>
+                  <span className="font-medium">Your Role:</span> {orgData.activeOrg.role}
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-muted-foreground">No organization found</p>

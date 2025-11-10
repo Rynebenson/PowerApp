@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { useSidebar } from "@/components/ui/sidebar"
 import Image from "next/image"
 import Logo from "@/public/logo.png"
-import { signOut, fetchUserAttributes } from "aws-amplify/auth"
+import { signOut, fetchUserAttributes, fetchAuthSession } from "aws-amplify/auth"
 import Link from "next/link"
 import useSWR from "swr"
 
@@ -17,11 +17,30 @@ const fetchUser = async () => {
   return attributes
 }
 
+const fetchAppData = async () => {
+  const session = await fetchAuthSession()
+  const token = session.tokens?.idToken?.toString()
+  
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/app-data`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  
+  if (!response.ok) throw new Error('Failed to fetch app data')
+  return response.json()
+}
+
 export default function Header() {
   const [searchFocused, setSearchFocused] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const { openMobile, setOpenMobile } = useSidebar()
   const { data: userAttributes } = useSWR('user-attributes', fetchUser)
+  const { data: appData } = useSWR('app-data', fetchAppData)
+
+  const organizations = appData?.organizations || []
+  const userProfile = appData?.user
+  const activeOrg = organizations.find((org: { id: string }) => org.id === userProfile?.active_org_id)
 
   const handleSignOut = async () => {
     await signOut()
@@ -47,9 +66,15 @@ export default function Header() {
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 bg-background px-4">
       <button 
         onClick={() => setOpenMobile(!openMobile)}
-        className="flex items-center gap-2 md:hidden"
+        className="flex items-center gap-2 md:hidden h-9 rounded-md border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 backdrop-blur-sm px-3 text-sm"
       >
-        <Menu className="size-5" />
+        <Menu className="size-4" />
+        {activeOrg && (
+          <Avatar className="size-6 ring-2 ring-white/10">
+            <AvatarFallback className="text-xs font-semibold bg-blue-500 text-white">{activeOrg.name.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
+        )}
+        <span className="max-w-[120px] truncate">{activeOrg?.name || "Select Workspace"}</span>
       </button>
 
       <div className="hidden md:block">

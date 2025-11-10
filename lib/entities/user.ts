@@ -6,6 +6,7 @@ export interface User {
   email: string;
   name?: string;
   picture?: string;
+  active_org_id?: string;
   created_at: string;
   updated_at: string;
 }

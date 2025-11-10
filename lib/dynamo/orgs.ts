@@ -1,4 +1,4 @@
-import { GetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, QueryCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { docClient, TABLE_NAME } from "./client";
 import { Organization } from "../entities";
 
@@ -25,4 +25,11 @@ export async function getOrgMembers(orgId: string) {
   }));
 
   return result.Items || [];
+}
+
+export async function putOrganization(org: Organization): Promise<void> {
+  await docClient.send(new PutCommand({
+    TableName: TABLE_NAME,
+    Item: org
+  }));
 }

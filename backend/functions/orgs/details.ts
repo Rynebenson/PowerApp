@@ -10,19 +10,17 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
       try {
         const user = await getUser(userId);
         
-        if (!user) {
+        if (!user || !user.active_org_id) {
           return {
-            statusCode: 404,
+            statusCode: 200,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ error: "User not found" })
+            body: JSON.stringify({ organization: null, members: [] })
           };
         }
 
-        // For now, we'll use a default org. In production, we'll get this from user data
-        const orgId = "default";
         const [org, members] = await Promise.all([
-          getOrganization(orgId),
-          getOrgMembers(orgId)
+          getOrganization(user.active_org_id),
+          getOrgMembers(user.active_org_id)
         ]);
 
         return {
@@ -31,10 +29,11 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
           body: JSON.stringify({ organization: org, members })
         };
       } catch (error) {
+        console.error('Error in orgs/details:', error);
         return {
           statusCode: 500,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ error })
+          body: JSON.stringify({ error: String(error) })
         };
       }
 
