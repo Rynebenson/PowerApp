@@ -195,6 +195,22 @@ export default $config({
     }, {
       auth: { jwt: { authorizer: authorizer.id } },
     });
+
+    api.route("GET /users/profile", {
+      handler: "backend/functions/users/profile.handler",
+      link: [appDataTable],
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("GET /orgs/details", {
+      handler: "backend/functions/orgs/details.handler",
+      link: [appDataTable],
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
     
     const web = new sst.aws.Nextjs("MyWeb", {
       ...(webCertArn && {

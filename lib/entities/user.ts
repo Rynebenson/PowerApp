@@ -17,5 +17,6 @@ export interface UserPreferences {
   user_id: string;
   theme?: "light" | "dark" | "system";
   notifications_enabled?: boolean;
+  timezone?: string;
   updated_at: string;
 }
