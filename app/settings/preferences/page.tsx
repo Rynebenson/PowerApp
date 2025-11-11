@@ -118,7 +118,7 @@ export default function PreferencesPage() {
               <Skeleton className="h-10 w-full" />
             </>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="theme">Theme</Label>
                 <Select
@@ -128,7 +128,7 @@ export default function PreferencesPage() {
                     updatePreference("theme", value);
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select theme" />
                   </SelectTrigger>
                   <SelectContent>
@@ -148,7 +148,7 @@ export default function PreferencesPage() {
                     updatePreference("timezone", value);
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select timezone" />
                   </SelectTrigger>
                   <SelectContent>

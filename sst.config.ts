@@ -29,6 +29,8 @@ export default $config({
       },
       ttl: "ttl",
     });
+
+    const chatbotDocumentsBucket = new sst.aws.Bucket("ChatbotDocuments");
     const webDomain = {
       production: "powerapp.rynebenson.com",
       development: "dev.powerapp.rynebenson.com"
@@ -183,6 +185,9 @@ export default $config({
     api.route("GET /users/preferences", {
       handler: "backend/functions/users/preferences.handler",
       link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
       architecture: "arm64",
     }, {
       auth: { jwt: { authorizer: authorizer.id } },
@@ -191,6 +196,9 @@ export default $config({
     api.route("PUT /users/preferences", {
       handler: "backend/functions/users/preferences.handler",
       link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
       architecture: "arm64",
     }, {
       auth: { jwt: { authorizer: authorizer.id } },
@@ -256,6 +264,86 @@ export default $config({
       link: [appDataTable],
       environment: {
         APP_DATA_TABLE: appDataTable.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("GET /chatbots", {
+      handler: "backend/functions/chatbots/manage.handler",
+      link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("POST /chatbots", {
+      handler: "backend/functions/chatbots/manage.handler",
+      link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("GET /chatbots/{chatbotId}", {
+      handler: "backend/functions/chatbots/details.handler",
+      link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("PUT /chatbots/{chatbotId}", {
+      handler: "backend/functions/chatbots/details.handler",
+      link: [appDataTable],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("POST /chatbots/{chatbotId}/context", {
+      handler: "backend/functions/chatbots/context.handler",
+      link: [appDataTable, chatbotDocumentsBucket],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+        DOCUMENTS_BUCKET: chatbotDocumentsBucket.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("GET /chatbots/{chatbotId}/context", {
+      handler: "backend/functions/chatbots/context.handler",
+      link: [appDataTable, chatbotDocumentsBucket],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+        DOCUMENTS_BUCKET: chatbotDocumentsBucket.name,
+      },
+      architecture: "arm64",
+    }, {
+      auth: { jwt: { authorizer: authorizer.id } },
+    });
+
+    api.route("DELETE /chatbots/{chatbotId}/context/{contextId}", {
+      handler: "backend/functions/chatbots/context.handler",
+      link: [appDataTable, chatbotDocumentsBucket],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+        DOCUMENTS_BUCKET: chatbotDocumentsBucket.name,
       },
       architecture: "arm64",
     }, {
