@@ -17,10 +17,11 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
           body: JSON.stringify(preferences || {})
         };
       } catch (error) {
+        console.error("Error fetching preferences:", error);
         return {
           statusCode: 500,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ error })
+          body: JSON.stringify({ error: "Failed to fetch preferences" })
         };
       }
 
@@ -45,10 +46,11 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
           body: JSON.stringify(result)
         };
       } catch (error) {
+        console.error("Error updating preferences:", error);
         return {
           statusCode: 500,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ error })
+          body: JSON.stringify({ error: "Failed to update preferences" })
         };
       }
 

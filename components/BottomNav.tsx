@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { TbHome, TbRobot, TbMessageCircle, TbChartBar } from "react-icons/tb"
+import { TbHome, TbRobot } from "react-icons/tb"
 
 export default function BottomNav() {
   const pathname = usePathname()
@@ -10,8 +10,6 @@ export default function BottomNav() {
   const navItems = [
     { href: "/", icon: TbHome, label: "Home" },
     { href: "/chatbots", icon: TbRobot, label: "Chatbots" },
-    { href: "/conversations", icon: TbMessageCircle, label: "Conversations" },
-    { href: "/analytics", icon: TbChartBar, label: "Analytics" },
   ]
 
   return (

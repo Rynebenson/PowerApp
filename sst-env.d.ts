@@ -13,6 +13,10 @@ declare module "sst" {
       "name": string
       "type": "sst.aws.Dynamo"
     }
+    "ChatbotDocuments": {
+      "name": string
+      "type": "sst.aws.Bucket"
+    }
     "GOOGLE_CLIENT_ID": {
       "type": "sst.sst.Secret"
       "value": string

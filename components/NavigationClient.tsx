@@ -46,9 +46,6 @@ import { useState } from "react"
 const MENU_ITEMS = [
   { icon: Home, href: "/", label: "Dashboard" },
   { icon: Bot, href: "/chatbots", label: "Chatbots" },
-  { icon: MessageSquare, href: "/conversations", label: "Conversations" },
-  { icon: BarChart3, href: "/analytics", label: "Analytics" },
-  { icon: Zap, href: "/integrations", label: "Integrations" },
 ]
 
 const fetchUser = async () => {
