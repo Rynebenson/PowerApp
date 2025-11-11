@@ -23,8 +23,8 @@ export default function HealthChecker() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="mx-auto my-8 px-4 max-w-md">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Health Status</CardTitle>
         </CardHeader>

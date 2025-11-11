@@ -2,9 +2,8 @@
 
 import { ThemeProvider } from "next-themes"
 import AuthGuard from "@/components/AuthGuard"
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
-import Header from "@/components/Header"
-import BottomNav from "@/components/BottomNav"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { AppProvider } from "@/contexts/AppContext"
 import "@/lib/amplify"
 
 export default function Providers({
@@ -15,9 +14,11 @@ export default function Providers({
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <AuthGuard>
-        <SidebarProvider>
-          {children}
-        </SidebarProvider>
+        <AppProvider>
+          <SidebarProvider>
+            {children}
+          </SidebarProvider>
+        </AppProvider>
       </AuthGuard>
     </ThemeProvider>
   )

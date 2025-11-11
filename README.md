@@ -101,8 +101,27 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
 
 **Route Configuration** in `sst.config.ts`:
 ```typescript
-api.route("GET /users/preferences", "backend/functions/users/preferences.handler")
-api.route("PUT /users/preferences", "backend/functions/users/preferences.handler")
+api.route("GET /users/preferences", {
+  handler: "backend/functions/users/preferences.handler",
+  link: [appDataTable],
+  environment: {
+    APP_DATA_TABLE: appDataTable.name,
+  },
+  architecture: "arm64",
+}, {
+  auth: { jwt: { authorizer: authorizer.id } },
+});
+
+api.route("PUT /users/preferences", {
+  handler: "backend/functions/users/preferences.handler",
+  link: [appDataTable],
+  environment: {
+    APP_DATA_TABLE: appDataTable.name,
+  },
+  architecture: "arm64",
+}, {
+  auth: { jwt: { authorizer: authorizer.id } },
+});
 ```
 
 ## Preferences
