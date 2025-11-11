@@ -486,7 +486,7 @@ export default function ChatbotDetailPage() {
       </div>
 
       <Drawer open={editDrawerOpen} onOpenChange={setEditDrawerOpen} direction="right">
-        <DrawerContent className="h-full dark:bg-slate-900">
+        <DrawerContent className="h-full dark:bg-zinc-900">
           <DrawerHeader className="text-left">
             <DrawerTitle>Edit Chatbot</DrawerTitle>
             <DrawerDescription>Update chatbot configuration</DrawerDescription>

@@ -201,7 +201,7 @@ export default function ChatbotsPage() {
               Create Chatbot
             </Button>
           </DrawerTrigger>
-          <DrawerContent className="h-full dark:bg-slate-900">
+          <DrawerContent className="h-full dark:bg-zinc-900">
             <DrawerHeader>
               <DrawerTitle>Create New Chatbot</DrawerTitle>
               <DrawerDescription>Add a new AI chatbot for your website</DrawerDescription>
@@ -335,7 +335,7 @@ export default function ChatbotsPage() {
 
       {/* Mobile: Filters Drawer */}
       <Drawer open={filtersOpen} onOpenChange={setFiltersOpen} direction="bottom">
-        <DrawerContent className="h-[60vh] dark:bg-slate-900">
+        <DrawerContent className="h-[60vh] dark:bg-zinc-900">
           <DrawerHeader className="text-left">
             <DrawerTitle>Sort & Filter</DrawerTitle>
             <DrawerDescription>Organize your chatbots</DrawerDescription>
@@ -437,42 +437,86 @@ export default function ChatbotsPage() {
           </div>
         </div>
       ) : (
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Active</h2>
-          <div className="space-y-2">
-            {filteredAndSortedChatbots.map((chatbot: Chatbot) => (
-              <div 
-                key={chatbot.id} 
-                className="bg-slate-100 dark:bg-slate-800/30 border-l-4 border-slate-400 dark:border-slate-600 p-4 rounded cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-colors"
-                onClick={() => router.push(`/chatbots/${chatbot.id}`)}
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Bot className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                      <span className="font-medium">{chatbot.name}</span>
-                    </div>
-                    {chatbot.description && (
-                      <p className="text-sm text-muted-foreground">
-                        {chatbot.description}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-4 mt-2">
-                      <span className="text-xs text-muted-foreground">
-                        {BEDROCK_MODELS[chatbot.model as keyof typeof BEDROCK_MODELS]?.name || chatbot.model}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        Created: {new Date(chatbot.createdAt).toLocaleDateString()}
-                      </span>
+        <div className="space-y-8">
+          {filteredAndSortedChatbots.filter((c: Chatbot) => c.status === 'active').length > 0 && (
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Active</h2>
+              <div className="space-y-2">
+                {filteredAndSortedChatbots.filter((c: Chatbot) => c.status === 'active').map((chatbot: Chatbot) => (
+                  <div 
+                    key={chatbot.id} 
+                    className="bg-indigo-50 dark:bg-indigo-950/20 border-l-4 border-indigo-400 dark:border-indigo-600 p-4 rounded cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-950/30 transition-colors"
+                    onClick={() => router.push(`/chatbots/${chatbot.id}`)}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Bot className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                          <span className="font-medium">{chatbot.name}</span>
+                        </div>
+                        {chatbot.description && (
+                          <p className="text-sm text-muted-foreground">
+                            {chatbot.description}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className="text-xs text-muted-foreground">
+                            {BEDROCK_MODELS[chatbot.model as keyof typeof BEDROCK_MODELS]?.name || chatbot.model}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Created: {new Date(chatbot.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      <Badge className="capitalize bg-indigo-600 text-white hover:bg-indigo-700">
+                        {chatbot.status}
+                      </Badge>
                     </div>
                   </div>
-                  <Badge className="capitalize bg-slate-600 text-white hover:bg-slate-700">
-                    {chatbot.status}
-                  </Badge>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+
+          {filteredAndSortedChatbots.filter((c: Chatbot) => c.status === 'inactive').length > 0 && (
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Inactive</h2>
+              <div className="space-y-2">
+                {filteredAndSortedChatbots.filter((c: Chatbot) => c.status === 'inactive').map((chatbot: Chatbot) => (
+                  <div 
+                    key={chatbot.id} 
+                    className="bg-slate-100 dark:bg-slate-800/30 border-l-4 border-slate-400 dark:border-slate-600 p-4 rounded cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-colors"
+                    onClick={() => router.push(`/chatbots/${chatbot.id}`)}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Bot className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                          <span className="font-medium">{chatbot.name}</span>
+                        </div>
+                        {chatbot.description && (
+                          <p className="text-sm text-muted-foreground">
+                            {chatbot.description}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className="text-xs text-muted-foreground">
+                            {BEDROCK_MODELS[chatbot.model as keyof typeof BEDROCK_MODELS]?.name || chatbot.model}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Created: {new Date(chatbot.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      <Badge className="capitalize bg-slate-600 text-white hover:bg-slate-700">
+                        {chatbot.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

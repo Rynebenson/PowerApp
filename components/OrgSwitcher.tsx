@@ -67,7 +67,7 @@ export default function OrgSwitcher({ activeOrg, organizations, onSwitchOrg, onC
             </div>
             <div className="flex flex-col items-start">
               <span className="text-sm font-medium truncate max-w-32">{activeOrg?.name}</span>
-              <span className="text-xs text-muted-foreground">{activeOrg?.role}</span>
+              <span className="text-xs text-muted-foreground capitalize">{activeOrg?.role}</span>
             </div>
           </div>
           <ChevronDown className="h-4 w-4 opacity-50" />
@@ -97,7 +97,7 @@ export default function OrgSwitcher({ activeOrg, organizations, onSwitchOrg, onC
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-medium">{org.name}</span>
-                <span className="text-xs text-muted-foreground">{org.role}</span>
+                <span className="text-xs text-muted-foreground capitalize">{org.role}</span>
               </div>
             </div>
           </DropdownMenuItem>
