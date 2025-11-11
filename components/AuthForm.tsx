@@ -139,8 +139,8 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
-      <div className="w-full lg:max-w-md bg-background lg:border-r flex flex-col justify-center px-8 py-12 lg:py-12 relative">
+    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden">
+      <div className="w-full lg:max-w-md bg-background lg:border-r flex flex-col justify-center px-8 py-20 lg:py-12 relative">
         <div className="mb-12 lg:absolute lg:top-8 lg:left-8 lg:mb-0">
           <Image 
             src={Logo}
@@ -187,7 +187,7 @@ export default function AuthForm() {
                 />
               </div>
               {error && <p className="text-red-500 text-sm">{error}</p>}
-              <Button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <Button type="submit" disabled={loading} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white">
                 {loading ? 'Sending...' : 'Send Reset Code'}
               </Button>
               <Button 
@@ -224,7 +224,7 @@ export default function AuthForm() {
                 />
               </div>
               {error && <p className="text-red-500 text-sm">{error}</p>}
-              <Button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <Button type="submit" disabled={loading} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white">
                 {loading ? 'Resetting...' : 'Reset Password'}
               </Button>
             </form>
@@ -242,7 +242,7 @@ export default function AuthForm() {
                 />
               </div>
               {error && <p className="text-red-500 text-sm">{error}</p>}
-              <Button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <Button type="submit" disabled={loading} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white">
                 {loading ? 'Confirming...' : 'Confirm'}
               </Button>
             </form>
@@ -363,7 +363,7 @@ export default function AuthForm() {
                   </div>
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
-                <Button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                <Button type="submit" disabled={loading} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white">
                   {loading ? (isSignUp ? 'Creating account...' : 'Signing in...') : (isSignUp ? 'Create Account' : 'Login')}
                 </Button>
               </form>
@@ -375,7 +375,7 @@ export default function AuthForm() {
                 <button
                   type="button"
                   onClick={() => setIsSignUp(!isSignUp)}
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm text-indigo-600 hover:underline"
                 >
                   {isSignUp ? 'Sign in' : 'Sign up'}
                 </button>
@@ -385,24 +385,70 @@ export default function AuthForm() {
         </div>
       </div>
 
-      {/* Right Content Area */}
-      <div className="flex-1 bg-linear-to-br from-blue-600 to-purple-700 flex items-center justify-center p-8 min-h-[50vh] lg:min-h-screen">
-        <div className="max-w-2xl text-white space-y-6">
-          <h1 className="text-2xl lg:text-4xl font-bold">
-            The simplest way to manage your chatbots
-          </h1>
-          <p className="text-lg lg:text-xl opacity-90">
-            Create, deploy, and manage intelligent conversational AI solutions with PowerApp&apos;s comprehensive chatbot management platform.
-          </p>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 space-y-4">
-            <h3 className="text-lg font-semibold">Key Features:</h3>
-            <ul className="space-y-2 text-sm opacity-90">
-              <li>• Drag-and-drop chatbot builder</li>
-              <li>• Multi-platform deployment</li>
-              <li>• Real-time analytics and insights</li>
-              <li>• Natural language processing</li>
-              <li>• Team collaboration tools</li>
-            </ul>
+      <div className="flex-1 bg-linear-to-br from-indigo-900 to-purple-900 flex items-center justify-center py-20 px-8 lg:p-8 min-h-[50vh] lg:min-h-screen relative">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Floating Circles */}
+          <div className="absolute top-20 left-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/4 w-48 h-48 bg-violet-500/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }} />
+          
+          {/* Animated Lines */}
+          <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="rgba(99, 102, 241, 0.3)" />
+                <stop offset="100%" stopColor="rgba(168, 85, 247, 0.3)" />
+              </linearGradient>
+            </defs>
+            <path d="M0,100 Q250,50 500,100 T1000,100" stroke="url(#lineGradient)" strokeWidth="2" fill="none" opacity="0.3">
+              <animate attributeName="d" dur="10s" repeatCount="indefinite"
+                values="M0,100 Q250,50 500,100 T1000,100;
+                        M0,100 Q250,150 500,100 T1000,100;
+                        M0,100 Q250,50 500,100 T1000,100" />
+            </path>
+            <path d="M0,300 Q300,250 600,300 T1200,300" stroke="url(#lineGradient)" strokeWidth="2" fill="none" opacity="0.2">
+              <animate attributeName="d" dur="15s" repeatCount="indefinite"
+                values="M0,300 Q300,250 600,300 T1200,300;
+                        M0,300 Q300,350 600,300 T1200,300;
+                        M0,300 Q300,250 600,300 T1200,300" />
+            </path>
+            <path d="M0,500 Q400,450 800,500 T1600,500" stroke="url(#lineGradient)" strokeWidth="2" fill="none" opacity="0.15">
+              <animate attributeName="d" dur="20s" repeatCount="indefinite"
+                values="M0,500 Q400,450 800,500 T1600,500;
+                        M0,500 Q400,550 800,500 T1600,500;
+                        M0,500 Q400,450 800,500 T1600,500" />
+            </path>
+          </svg>
+          
+          {/* Grid Pattern */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+        </div>
+        <div className="max-w-4xl w-full text-white space-y-12 lg:space-y-16 relative z-10">
+          <div className="space-y-4 max-w-2xl">
+            <h1 className="text-2xl lg:text-4xl font-bold">
+              The simplest way to manage your chatbots
+            </h1>
+            <p className="text-lg lg:text-xl opacity-90">
+              Create, deploy, and manage intelligent conversational AI solutions with PowerApp&apos;s comprehensive chatbot management platform.
+            </p>
+          </div>
+          <div className="relative w-full h-[500px]">
+            <Image
+              src="/product-preview-lg.png"
+              alt="PowerApp Dashboard"
+              width={800}
+              height={600}
+              className="absolute left-10 bottom-0 rounded-lg shadow-2xl border-4 border-white/20 h-[500px] w-[816px] min-w-[816px]"
+              priority
+            />
+            <Image
+              src="/product-preview-sm.png"
+              alt="PowerApp Mobile"
+              width={400}
+              height={300}
+              className="absolute left-0 bottom-0 rounded-lg shadow-2xl border-4 border-white/20 w-[250px] h-auto max-h-[70%] object-cover object-top"
+              priority
+            />
           </div>
         </div>
       </div>

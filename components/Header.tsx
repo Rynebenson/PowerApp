@@ -3,7 +3,7 @@
 import { Search, ChevronDown, Menu, User, Settings, LogOut } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuLabel } from "@/components/ui/dropdown-menu"
 import { useSidebar } from "@/components/ui/sidebar"
 import Image from "next/image"
@@ -114,6 +114,7 @@ export default function Header() {
           <DropdownMenuTrigger asChild>
             <button className="relative">
               <Avatar className="size-10">
+                <AvatarImage src={userAttributes?.picture} />
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="absolute -bottom-0.5 -right-0.5 size-4 rounded-full bg-muted border-2 border-sidebar flex items-center justify-center">
@@ -125,6 +126,7 @@ export default function Header() {
             <DropdownMenuLabel>
               <div className="flex items-center gap-2">
                 <Avatar className="size-10">
+                  <AvatarImage src={userAttributes?.picture} />
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
@@ -166,6 +168,7 @@ export default function Header() {
           <DropdownMenuTrigger asChild>
             <button className="relative">
               <Avatar className="size-10">
+                <AvatarImage src={userAttributes?.picture} />
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="absolute -bottom-0.5 -right-0.5 size-4 rounded-full bg-muted border-2 border-sidebar flex items-center justify-center">
@@ -177,6 +180,7 @@ export default function Header() {
             <DropdownMenuLabel>
               <div className="flex items-center gap-2">
                 <Avatar className="size-10">
+                  <AvatarImage src={userAttributes?.picture} />
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
