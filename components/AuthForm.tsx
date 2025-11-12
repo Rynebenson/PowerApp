@@ -421,7 +421,7 @@ export default function AuthForm() {
           </svg>
           
           {/* Grid Pattern */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[100px_100px]" />
         </div>
         <div className="max-w-4xl w-full text-white space-y-12 lg:space-y-16 relative z-10">
           <div className="space-y-4 max-w-2xl">

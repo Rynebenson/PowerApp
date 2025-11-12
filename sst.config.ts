@@ -30,7 +30,40 @@ export default $config({
       ttl: "ttl",
     });
 
+    // TODO: Re-enable OpenSearch and document processing when ready
+    // const vectorSearch = new sst.aws.OpenSearch("VectorSearch", {
+    //   version: "OpenSearch_2.11",
+    //   instance: "t3.small",
+    //   storage: "10 GB",
+    // });
+
     const chatbotDocumentsBucket = new sst.aws.Bucket("ChatbotDocuments");
+
+    // TODO: Re-enable document processing when OpenSearch is ready
+    // chatbotDocumentsBucket.notify({
+    //   notifications: [
+    //     {
+    //       name: "DocumentProcessor",
+    //       function: {
+    //         handler: "backend/functions/documents/process.handler",
+    //         link: [vectorSearch, chatbotDocumentsBucket],
+    //         environment: {
+    //           OPENSEARCH_ENDPOINT: vectorSearch.url,
+    //         },
+    //         permissions: [
+    //           {
+    //             actions: ["bedrock:InvokeModel"],
+    //             resources: ["arn:aws:bedrock:*::foundation-model/amazon.titan-embed-text-v2:0"],
+    //           },
+    //         ],
+    //         architecture: "arm64",
+    //         timeout: "5 minutes",
+    //         memory: "1024 MB",
+    //       }
+    //     }
+    //   ]
+    // });
+    
     const webDomain = {
       production: "powerapp.rynebenson.com",
       development: "dev.powerapp.rynebenson.com"
@@ -349,6 +382,31 @@ export default $config({
     }, {
       auth: { jwt: { authorizer: authorizer.id } },
     });
+
+    // TODO: Re-enable chat endpoint when OpenSearch and Bedrock are ready
+    // api.route("POST /chat/{chatbotId}", {
+    //   handler: "backend/functions/chatbots/chat.handler",
+    //   link: [appDataTable, vectorSearch],
+    //   environment: {
+    //     APP_DATA_TABLE: appDataTable.name,
+    //     OPENSEARCH_ENDPOINT: vectorSearch.url,
+    //   },
+    //   permissions: [
+    //     {
+    //       actions: ["bedrock:InvokeModel"],
+    //       resources: [
+    //         "arn:aws:bedrock:*::foundation-model/amazon.titan-embed-text-v2:0",
+    //         "arn:aws:bedrock:*::foundation-model/meta.llama3-8b-instruct-v1:0",
+    //         "arn:aws:bedrock:*:*:inference-profile/*",
+    //       ],
+    //     },
+    //     {
+    //       actions: ["es:*"],
+    //       resources: [$interpolate`${vectorSearch.nodes.domain?.arn}/*`],
+    //     },
+    //   ],
+    //   architecture: "arm64",
+    // });
     
     const web = new sst.aws.Nextjs("MyWeb", {
       ...(webCertArn && {
@@ -371,6 +429,7 @@ export default $config({
       web: web.url,
       userPoolId: userPool.id,
       userPoolClientId: userPoolClient.id,
+      // opensearchEndpoint: vectorSearch.url,
     };
   },
 });
