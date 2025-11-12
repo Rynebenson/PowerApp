@@ -4,13 +4,46 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X } from 'lucide-react';
+import type { BedrockModel } from '@/lib/entities/chatbot';
+
+const BEDROCK_MODELS = {
+  'llama-3-8b': {
+    name: 'Llama 3 8B',
+    description: 'Fastest and cheapest option',
+    tier: 'free',
+  },
+  'claude-3-5-haiku': {
+    name: 'Claude 3.5 Haiku',
+    description: 'Fast and affordable, great for customer support',
+    tier: 'free',
+  },
+  'llama-3-70b': {
+    name: 'Llama 3 70B',
+    description: 'Open source, strong performance',
+    tier: 'premium',
+  },
+  'claude-3-5-sonnet': {
+    name: 'Claude 3.5 Sonnet',
+    description: 'Best balance of intelligence and speed',
+    tier: 'premium',
+  },
+  'claude-3-opus': {
+    name: 'Claude 3 Opus',
+    description: 'Most capable, for complex reasoning tasks',
+    tier: 'premium',
+  },
+};
 
 interface OnboardingWizardProps {
   onComplete: (data: {
     name: string;
-    email?: string;
-    phone?: string;
+    chatbot: {
+      name: string;
+      description: string;
+      model: BedrockModel;
+    };
   }) => Promise<void>;
   onClose?: () => void;
 }
@@ -22,9 +55,10 @@ export default function OnboardingWizard({ onComplete, onClose }: OnboardingWiza
   // Step 1: Workspace name
   const [name, setName] = useState('');
 
-  // Step 2: Contact details
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+  // Step 2: Chatbot setup
+  const [chatbotName, setChatbotName] = useState('');
+  const [chatbotDescription, setChatbotDescription] = useState('');
+  const [model, setModel] = useState<BedrockModel>('claude-3-5-haiku');
 
   const handleNext = () => {
     if (step < 2) {
@@ -43,8 +77,11 @@ export default function OnboardingWizard({ onComplete, onClose }: OnboardingWiza
     try {
       await onComplete({
         name,
-        email: email || undefined,
-        phone: phone || undefined,
+        chatbot: {
+          name: chatbotName,
+          description: chatbotDescription,
+          model,
+        },
       });
     } catch (error) {
       console.error('Onboarding error:', error);
@@ -55,14 +92,14 @@ export default function OnboardingWizard({ onComplete, onClose }: OnboardingWiza
 
   const isStepValid = () => {
     if (step === 1) return name.trim().length > 0;
-    if (step === 2) return true; // Optional fields
+    if (step === 2) return chatbotName.trim().length > 0;
     return false;
   };
 
-  const stepTitles = ['Workspace name', 'Contact details'];
+  const stepTitles = ['Workspace name', 'Create chatbot'];
 
   return (
-    <div className="fixed inset-0 w-full h-full bg-background dark:bg-zinc-900 flex flex-col" style={{ zIndex: 9999 }}>
+    <div className="fixed inset-0 w-full h-full bg-background dark:bg-zinc-900 flex flex-col z-[10000]">
       <div className="flex items-center justify-between p-8 pb-6">
         <h2 className="text-2xl font-semibold">Create a workspace</h2>
         {onClose ? (
@@ -76,14 +113,14 @@ export default function OnboardingWizard({ onComplete, onClose }: OnboardingWiza
         )}
       </div>
 
-      <div className="md:hidden mx-8 mb-4 p-3 bg-muted/50 rounded-lg">
+      <div className="md:hidden mx-8 mb-4 p-3 bg-muted/50 rounded-lg relative z-10">
         <div className="flex items-center justify-between">
           <span className="font-medium">{stepTitles[step - 1]}</span>
           <span className="text-sm text-muted-foreground">{step} of 2</span>
         </div>
       </div>
 
-      <div className="flex-1 flex gap-12 max-w-4xl mx-auto w-full px-8 md:pt-8 overflow-y-auto">
+      <div className="flex-1 flex gap-12 max-w-4xl mx-auto w-full px-8 md:pt-8 overflow-y-auto relative z-0">
         <div className="hidden md:flex flex-col items-center w-32 shrink-0">
           <div className="flex flex-col items-center">
             <div className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-medium ${
@@ -109,7 +146,7 @@ export default function OnboardingWizard({ onComplete, onClose }: OnboardingWiza
               2
             </div>
             <div className="text-sm mt-2 text-center">
-              Contact details
+              Create chatbot
             </div>
           </div>
         </div>
@@ -144,33 +181,56 @@ export default function OnboardingWizard({ onComplete, onClose }: OnboardingWiza
             {step === 2 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Contact details</h3>
+                  <h3 className="text-xl font-semibold mb-2">Create your first chatbot</h3>
                   <p className="text-sm text-muted-foreground">
-                    Add your workspace contact information (optional)
+                    Set up a chatbot to get started. You can customize it later.
                   </p>
                 </div>
                 
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="chatbotName">Chatbot name *</Label>
                     <Input
-                      id="email"
-                      type="email"
-                      placeholder="contact@company.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      id="chatbotName"
+                      placeholder="e.g. Customer Support Bot"
+                      value={chatbotName}
+                      onChange={(e) => setChatbotName(e.target.value)}
+                      maxLength={80}
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone number</Label>
+                    <Label htmlFor="chatbotDescription">Description</Label>
                     <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="(555) 123-4567"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      id="chatbotDescription"
+                      placeholder="What does this chatbot do?"
+                      value={chatbotDescription}
+                      onChange={(e) => setChatbotDescription(e.target.value)}
+                      maxLength={200}
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="model">AI Model</Label>
+                    <Select value={model} onValueChange={(value) => setModel(value as BedrockModel)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="z-10000">
+                        {Object.entries(BEDROCK_MODELS).map(([key, modelInfo]) => (
+                          <SelectItem 
+                            key={key} 
+                            value={key}
+                            disabled={modelInfo.tier === 'premium'}
+                          >
+                            {modelInfo.name} {modelInfo.tier === 'free' ? '✓ FREE' : '🔒 PREMIUM'}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      {BEDROCK_MODELS[model as keyof typeof BEDROCK_MODELS]?.description}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -205,7 +265,7 @@ export default function OnboardingWizard({ onComplete, onClose }: OnboardingWiza
               disabled={!isStepValid() || loading}
               className="bg-blue-600 hover:bg-blue-500 text-white w-full sm:w-auto"
             >
-              {loading ? 'Creating...' : 'Create Workspace'}
+              {loading ? 'Creating...' : 'Complete Setup'}
             </Button>
           )}
         </div>
