@@ -33,6 +33,12 @@ declare module "sst" {
       "id": string
       "type": "sst.aws.CognitoUserPool"
     }
+    "VectorSearch": {
+      "password": string
+      "type": "sst.aws.OpenSearch"
+      "url": string
+      "username": string
+    }
   }
 }
 /// <reference path="sst-env.d.ts" />

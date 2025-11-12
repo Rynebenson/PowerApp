@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Edit2, Loader2, Copy, Check, Upload, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import ChatPreview from '@/components/ChatPreview';
 
 interface ChatbotContext {
   id: string;
@@ -298,10 +299,13 @@ export default function ChatbotDetailPage() {
             {chatbot.name}
           </h1>
         </div>
-        <Button onClick={() => setEditDrawerOpen(true)} className="bg-indigo-500 text-white hover:bg-indigo-600">
-          <Edit2 className="w-4 h-4 mr-2" />
-          Edit Chatbot
-        </Button>
+        <div className="flex gap-2">
+          <ChatPreview chatbotId={chatbot.id} chatbotName={chatbot.name} />
+          <Button onClick={() => setEditDrawerOpen(true)} className="bg-indigo-500 text-white hover:bg-indigo-600">
+            <Edit2 className="w-4 h-4 mr-2" />
+            Edit Chatbot
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

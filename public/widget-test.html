@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PowerApp Widget Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #667eea;
+    }
+    .info {
+      background: #f3f4f6;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    code {
+      background: #e5e7eb;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>PowerApp Widget Test Page</h1>
+  
+  <div class="info">
+    <h2>Instructions:</h2>
+    <ol>
+      <li>Replace <code>YOUR_CHATBOT_ID</code> in the script tag below with your actual chatbot ID</li>
+      <li>The widget button will appear in the bottom-right corner</li>
+      <li>Click it to open the chat interface</li>
+    </ol>
+  </div>
+
+  <h2>Sample Content</h2>
+  <p>
+    This is a test page to demonstrate the PowerApp chat widget. 
+    The widget should appear as a floating button in the bottom-right corner of the page.
+  </p>
+  
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor 
+    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud 
+    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  </p>
+
+  <p>
+    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
+    fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+    culpa qui officia deserunt mollit anim id est laborum.
+  </p>
+
+  <!-- PowerApp Widget -->
+  <script 
+    src="http://localhost:3000/widget.js" 
+    data-chatbot-id="YOUR_CHATBOT_ID"
+    data-api-url="http://localhost:3000/api"
+  ></script>
+</body>
+</html>
