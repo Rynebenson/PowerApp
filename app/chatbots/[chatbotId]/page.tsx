@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import useSWR from 'swr';
 import toast from 'react-hot-toast';
@@ -73,7 +74,6 @@ const fetcher = async (url: string) => {
 
 export default function ChatbotDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const chatbotId = params.chatbotId as string;
   
   const { data, error, mutate } = useSWR(
@@ -161,6 +161,7 @@ export default function ChatbotDetailPage() {
   };
 
   const handleFileUpload = async (file: File) => {
+    const uploadToast = toast.loading('Uploading document...');
     try {
       setUploading(true);
       const session = await fetchAuthSession();
@@ -184,7 +185,7 @@ export default function ChatbotDetailPage() {
       );
 
       if (!response.ok) {
-        toast.error('Failed to get upload URL');
+        toast.error('Failed to get upload URL', { id: uploadToast });
         return;
       }
 
@@ -202,19 +203,20 @@ export default function ChatbotDetailPage() {
       if (uploadResponse.ok) {
         await mutate();
         await mutateContexts();
-        toast.success('File uploaded successfully');
+        toast.success('Document uploaded successfully', { id: uploadToast });
       } else {
-        toast.error('Failed to upload file');
+        toast.error('Failed to upload document', { id: uploadToast });
       }
     } catch (error) {
       console.error('Failed to upload file:', error);
-      toast.error('Failed to upload file');
+      toast.error('Failed to upload document', { id: uploadToast });
     } finally {
       setUploading(false);
     }
   };
 
   const handleDeleteContext = async (contextId: string) => {
+    const deleteToast = toast.loading('Deleting document...');
     try {
       const session = await fetchAuthSession();
       const token = session.tokens?.accessToken?.toString();
@@ -232,13 +234,13 @@ export default function ChatbotDetailPage() {
       if (response.ok) {
         await mutate();
         await mutateContexts();
-        toast.success('Document deleted');
+        toast.success('Document deleted successfully', { id: deleteToast });
       } else {
-        toast.error('Failed to delete document');
+        toast.error('Failed to delete document', { id: deleteToast });
       }
     } catch (error) {
       console.error('Failed to delete document:', error);
-      toast.error('Failed to delete document');
+      toast.error('Failed to delete document', { id: deleteToast });
     }
   };
 
@@ -247,9 +249,11 @@ export default function ChatbotDetailPage() {
       <div className="p-3 md:p-6">
         <div className="text-center py-12">
           <h3 className="text-xl font-semibold">Chatbot not found</h3>
-          <Button onClick={() => router.push('/chatbots')} className="mt-4">
-            Back to Chatbots
-          </Button>
+          <Link href="/chatbots">
+            <Button className="mt-4">
+              Back to Chatbots
+            </Button>
+          </Link>
         </div>
       </div>
     );
@@ -258,14 +262,103 @@ export default function ChatbotDetailPage() {
   if (loading) {
     return (
       <div className="p-3 md:p-6 space-y-4">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
-            <Skeleton className="h-48" />
-            <Skeleton className="h-48" />
+        <div>
+          <Link href="/chatbots">
+            <Button variant="ghost" className="mb-2">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Chatbots
+            </Button>
+          </Link>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 ml-2">
+            <Skeleton className="h-8 w-64" />
+            <div className="flex flex-col md:flex-row gap-2">
+              <Button disabled className="w-full md:w-auto">
+                Preview Chat
+              </Button>
+              <Button disabled className="bg-indigo-500 text-white hover:bg-indigo-600 w-full md:w-auto">
+                <Edit2 className="w-4 h-4 mr-2" />
+                Edit Chatbot
+              </Button>
+            </div>
           </div>
-          <div className="space-y-6">
-            <Skeleton className="h-48" />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-8">
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Configuration</h2>
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Model</p>
+                  <Skeleton className="h-6 w-48" />
+                  <Skeleton className="h-4 w-32 mt-1" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Temperature</p>
+                  <Skeleton className="h-6 w-16" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Max Tokens</p>
+                  <Skeleton className="h-6 w-20" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Status</p>
+                  <Skeleton className="h-6 w-20" />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-xl font-semibold mb-4">System Prompt</h2>
+              <Skeleton className="h-32 w-full" />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Context & Knowledge Base</h2>
+                <Button size="sm" variant="outline" disabled>
+                  <Upload className="w-4 h-4 mr-1" />
+                  Upload Document
+                </Button>
+              </div>
+              <Skeleton className="h-24 w-full" />
+            </div>
+
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Events</h2>
+              <Skeleton className="h-20 w-full" />
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Embed Code</h2>
+              <div className="space-y-3">
+                <Skeleton className="h-24 w-full" />
+                <Button className="w-full" variant="outline" disabled>
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy Embed Code
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Quick Stats</h2>
+              <div className="space-y-3">
+                <div className="border rounded-lg p-3">
+                  <p className="text-sm text-muted-foreground">Total Messages</p>
+                  <Skeleton className="h-8 w-12" />
+                </div>
+                <div className="border rounded-lg p-3">
+                  <p className="text-sm text-muted-foreground">Documents</p>
+                  <Skeleton className="h-8 w-12" />
+                </div>
+                <div className="border rounded-lg p-3">
+                  <p className="text-sm text-muted-foreground">Created</p>
+                  <Skeleton className="h-5 w-24" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -277,9 +370,11 @@ export default function ChatbotDetailPage() {
       <div className="p-3 md:p-6">
         <div className="text-center py-12">
           <h3 className="text-xl font-semibold">Chatbot not found</h3>
-          <Button onClick={() => router.push('/chatbots')} className="mt-4">
-            Back to Chatbots
-          </Button>
+          <Link href="/chatbots">
+            <Button className="mt-4">
+              Back to Chatbots
+            </Button>
+          </Link>
         </div>
       </div>
     );
@@ -290,10 +385,12 @@ export default function ChatbotDetailPage() {
   return (
     <div className="p-3 md:p-6 space-y-4">
       <div>
-        <Button variant="ghost" onClick={() => router.push('/chatbots')} className="mb-2">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Chatbots
-        </Button>
+        <Link href="/chatbots">
+          <Button variant="ghost" className="mb-2">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Chatbots
+          </Button>
+        </Link>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 ml-2">
           <h1 className="text-2xl md:text-3xl font-bold">
             {chatbot.name}

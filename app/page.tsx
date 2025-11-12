@@ -1,9 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import useSWR from 'swr';
-import { Bot, Activity } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useApp } from '@/contexts/AppContext';
 
@@ -16,7 +16,6 @@ const fetcher = async (url: string) => {
 };
 
 export default function RootPage() {
-  const router = useRouter();
   const { activeOrg } = useApp();
   const { data, error } = useSWR(
     activeOrg?.id ? `${process.env.NEXT_PUBLIC_API_URL}/chatbots` : null,
@@ -36,8 +35,18 @@ export default function RootPage() {
 
       <div>
         {loading ? (
-          <div className="space-y-2">
-            {[1, 2, 3].map(i => <Skeleton key={i} className="h-24" />)}
+          <div className="bg-indigo-50 dark:bg-indigo-950/20 border-l-4 border-indigo-400 dark:border-indigo-600 p-4 rounded">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <Bot className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <Skeleton className="h-5 w-48" />
+                </div>
+                <div className="flex items-center gap-4 mt-2">
+                  <Skeleton className="h-3 w-32" />
+                </div>
+              </div>
+            </div>
           </div>
         ) : activeChatbots.length === 0 ? (
           <div className="text-center py-12">
@@ -47,10 +56,10 @@ export default function RootPage() {
         ) : (
           <div className="space-y-2">
             {activeChatbots.map((chatbot: { id: string; name: string; description?: string; model: string; createdAt: string; status: string }) => (
-              <div
+              <Link
                 key={chatbot.id}
-                className="bg-indigo-50 dark:bg-indigo-950/20 border-l-4 border-indigo-400 dark:border-indigo-600 p-4 rounded cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-950/30 transition-colors"
-                onClick={() => router.push(`/chatbots/${chatbot.id}`)}
+                href={`/chatbots/${chatbot.id}`}
+                className="block bg-indigo-400 dark:bg-indigo-950/30 border-l-4 border-indigo-400 dark:border-indigo-600 p-4 rounded cursor-pointer hover:bg-indigo-500 dark:hover:bg-indigo-950/40 transition-colors"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
@@ -73,7 +82,7 @@ export default function RootPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

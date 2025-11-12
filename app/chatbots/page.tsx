@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import useSWR from 'swr';
 import toast from 'react-hot-toast';
@@ -62,7 +62,6 @@ const fetcher = async (url: string) => {
 };
 
 export default function ChatbotsPage() {
-  const router = useRouter();
   const { activeOrg, loading: appLoading } = useApp();
   
   const { data, error, mutate } = useSWR(
@@ -169,7 +168,7 @@ export default function ChatbotsPage() {
         const { chatbot } = await response.json();
         await mutate();
         toast.success('Chatbot created successfully');
-        router.push(`/chatbots/${chatbot.id}`);
+        window.location.href = `/chatbots/${chatbot.id}`;
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || 'Failed to create chatbot');
@@ -412,7 +411,19 @@ export default function ChatbotsPage() {
             <h2 className="text-xl font-semibold mb-4">Active</h2>
             <div className="space-y-2">
               {[1, 2, 3].map(i => (
-                <Skeleton key={i} className="h-24 w-full" />
+                <div key={i} className="bg-indigo-50 dark:bg-indigo-950/20 border-l-4 border-indigo-400 dark:border-indigo-600 p-4 rounded">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Bot className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                        <Skeleton className="h-5 w-48" />
+                      </div>
+                      <div className="flex items-center gap-4 mt-2">
+                        <Skeleton className="h-3 w-32" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -443,10 +454,10 @@ export default function ChatbotsPage() {
               <h2 className="text-xl font-semibold mb-4">Active</h2>
               <div className="space-y-2">
                 {filteredAndSortedChatbots.filter((c: Chatbot) => c.status === 'active').map((chatbot: Chatbot) => (
-                  <div 
+                  <Link 
                     key={chatbot.id} 
-                    className="bg-indigo-50 dark:bg-indigo-950/20 border-l-4 border-indigo-400 dark:border-indigo-600 p-4 rounded cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-950/30 transition-colors"
-                    onClick={() => router.push(`/chatbots/${chatbot.id}`)}
+                    href={`/chatbots/${chatbot.id}`}
+                    className="block bg-indigo-50 dark:bg-indigo-950/20 border-l-4 border-indigo-400 dark:border-indigo-600 p-4 rounded cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-950/30 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
@@ -472,7 +483,7 @@ export default function ChatbotsPage() {
                         {chatbot.status}
                       </Badge>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -483,10 +494,10 @@ export default function ChatbotsPage() {
               <h2 className="text-xl font-semibold mb-4">Inactive</h2>
               <div className="space-y-2">
                 {filteredAndSortedChatbots.filter((c: Chatbot) => c.status === 'inactive').map((chatbot: Chatbot) => (
-                  <div 
+                  <Link 
                     key={chatbot.id} 
-                    className="bg-slate-100 dark:bg-slate-800/30 border-l-4 border-slate-400 dark:border-slate-600 p-4 rounded cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-colors"
-                    onClick={() => router.push(`/chatbots/${chatbot.id}`)}
+                    href={`/chatbots/${chatbot.id}`}
+                    className="block bg-slate-100 dark:bg-slate-800/30 border-l-4 border-slate-400 dark:border-slate-600 p-4 rounded cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
@@ -512,7 +523,7 @@ export default function ChatbotsPage() {
                         {chatbot.status}
                       </Badge>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
