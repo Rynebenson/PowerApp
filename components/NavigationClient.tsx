@@ -37,7 +37,7 @@ import {
 import Link from "next/link"
 import { AuthUser, signOut, fetchUserAttributes, fetchAuthSession } from "aws-amplify/auth"
 import { usePathname } from "next/navigation"
-import useSWR from "swr"
+import useSWR, { mutate as globalMutate } from "swr"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useSidebar } from "@/components/ui/sidebar"
 import OrgSwitcher from "@/components/OrgSwitcher"
@@ -107,6 +107,7 @@ export default function NavigationClient() {
     })
     
     await mutateAppData()
+    await globalMutate(() => true)
   }
 
   const handleCreateOrg = () => {

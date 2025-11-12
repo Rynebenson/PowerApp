@@ -289,22 +289,22 @@ export default function ChatbotDetailPage() {
 
   return (
     <div className="p-3 md:p-6 space-y-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <Button variant="ghost" onClick={() => router.push('/chatbots')} className="mb-2">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Chatbots
-          </Button>
-          <h1 className="text-2xl md:text-3xl font-bold ml-2">
+      <div>
+        <Button variant="ghost" onClick={() => router.push('/chatbots')} className="mb-2">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Chatbots
+        </Button>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 ml-2">
+          <h1 className="text-2xl md:text-3xl font-bold">
             {chatbot.name}
           </h1>
-        </div>
-        <div className="flex gap-2">
-          <ChatPreview chatbotId={chatbot.id} chatbotName={chatbot.name} />
-          <Button onClick={() => setEditDrawerOpen(true)} className="bg-indigo-500 text-white hover:bg-indigo-600">
-            <Edit2 className="w-4 h-4 mr-2" />
-            Edit Chatbot
-          </Button>
+          <div className="flex flex-col md:flex-row gap-2">
+            <ChatPreview chatbotId={chatbot.id} chatbotName={chatbot.name} />
+            <Button onClick={() => setEditDrawerOpen(true)} className="bg-indigo-500 text-white hover:bg-indigo-600 w-full md:w-auto">
+              <Edit2 className="w-4 h-4 mr-2" />
+              Edit Chatbot
+            </Button>
+          </div>
         </div>
       </div>
 

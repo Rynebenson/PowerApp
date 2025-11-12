@@ -94,7 +94,7 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="bg-indigo-500 hover:bg-indigo-600 text-white"
+        className="bg-indigo-500 hover:bg-indigo-600 text-white w-full md:w-auto"
       >
         <Bot className="w-4 h-4 mr-2" />
         Preview Chat
