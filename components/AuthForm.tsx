@@ -139,8 +139,8 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden">
-      <div className="w-full lg:max-w-md bg-background lg:border-r flex flex-col justify-center px-8 py-20 lg:py-12 relative">
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="w-full lg:w-[480px] lg:flex-shrink-0 lg:sticky lg:top-0 lg:h-screen bg-background lg:border-r flex flex-col justify-center px-8 py-20 lg:py-12 relative overflow-y-auto">
         <div className="mb-12 lg:absolute lg:top-8 lg:left-8 lg:mb-0">
           <Image 
             src={Logo}
@@ -385,7 +385,7 @@ export default function AuthForm() {
         </div>
       </div>
 
-      <div className="flex-1 bg-linear-to-br from-indigo-900 to-purple-900 flex items-center justify-center py-20 px-8 lg:p-8 min-h-[50vh] lg:min-h-screen relative">
+      <div className="flex-1 bg-linear-to-br from-indigo-900 to-purple-900 flex items-center justify-center py-20 px-8 lg:py-24 lg:px-16 min-h-[50vh] lg:min-h-screen relative">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {/* Floating Circles */}
           <div className="absolute top-20 left-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" />
@@ -424,13 +424,44 @@ export default function AuthForm() {
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[100px_100px]" />
         </div>
         <div className="max-w-4xl w-full text-white space-y-12 lg:space-y-16 relative z-10">
-          <div className="space-y-4 max-w-2xl">
+          <div className="space-y-6 max-w-2xl">
             <h1 className="text-2xl lg:text-4xl font-bold">
-              The simplest way to manage your chatbots
+              Add an AI Chatbot to Your Website in Minutes
             </h1>
-            <p className="text-lg lg:text-xl opacity-90">
-              Create, deploy, and manage intelligent conversational AI solutions with PowerApp&apos;s comprehensive chatbot management platform.
+            <p className="text-base lg:text-lg opacity-90">
+              Engage visitors 24/7 with intelligent, no-code chatbots that answer questions and capture leads.
             </p>
+            <div className="space-y-0 pt-4 relative">
+              <div className="absolute left-4 top-12 bottom-12 w-0.5 bg-white/20" />
+              <div className="flex items-start gap-3 pb-6 relative">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center text-sm font-semibold border-2 border-white/40 relative z-10">1</div>
+                <div className="pt-0.5">
+                  <p className="font-medium">Name your bot</p>
+                  <p className="text-sm opacity-75">Give it a purpose and description</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 pb-6 relative">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center text-sm font-semibold border-2 border-white/40 relative z-10">2</div>
+                <div className="pt-0.5">
+                  <p className="font-medium">Select your AI model</p>
+                  <p className="text-sm opacity-75">Choose from Claude, Llama, and more</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 pb-6 relative">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center text-sm font-semibold border-2 border-white/40 relative z-10">3</div>
+                <div className="pt-0.5">
+                  <p className="font-medium">Upload context</p>
+                  <p className="text-sm opacity-75">Add documents to train your bot</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 relative">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center text-sm font-semibold border-2 border-white/40 relative z-10">4</div>
+                <div className="pt-0.5">
+                  <p className="font-medium">Paste the script</p>
+                  <p className="text-sm opacity-75">Copy one line of code to your website</p>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="relative w-full h-[500px]">
             <Image
