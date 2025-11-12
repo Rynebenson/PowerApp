@@ -59,7 +59,7 @@ export default function RootPage() {
               <Link
                 key={chatbot.id}
                 href={`/chatbots/${chatbot.id}`}
-                className="block bg-indigo-400 dark:bg-indigo-950/30 border-l-4 border-indigo-400 dark:border-indigo-600 p-4 rounded cursor-pointer hover:bg-indigo-500 dark:hover:bg-indigo-950/40 transition-colors"
+                className="block bg-indigo-50 dark:bg-indigo-950/20 border-l-4 border-indigo-400 dark:border-indigo-600 p-4 rounded cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-950/30 transition-colors"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
