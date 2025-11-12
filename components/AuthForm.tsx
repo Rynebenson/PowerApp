@@ -385,7 +385,7 @@ export default function AuthForm() {
         </div>
       </div>
 
-      <div className="flex-1 bg-linear-to-br from-indigo-900 to-purple-900 flex items-center justify-center py-20 px-8 lg:py-24 lg:px-16 min-h-[50vh] lg:min-h-screen relative">
+      <div className="flex-1 bg-linear-to-br from-indigo-900 to-purple-900 flex items-center justify-center py-20 px-8 lg:py-24 lg:px-16 min-h-[50vh] lg:min-h-screen relative overflow-x-hidden">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {/* Floating Circles */}
           <div className="absolute top-20 left-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" />
