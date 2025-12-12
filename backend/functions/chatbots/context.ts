@@ -80,15 +80,15 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
         const context = {
           pk: `CHATBOT#${chatbotId}`,
           sk: `CONTEXT#${contextId}`,
-          entityType: "chatbot_context",
+          entity_type: "chatbot_context",
           id: contextId,
-          chatbotId,
+          chatbot_id: chatbotId,
           type,
-          s3Key,
+          s3_key: s3Key,
           metadata: {
             filename: fileName,
           },
-          createdAt: new Date().toISOString(),
+          created_at: new Date().toISOString(),
         };
 
         await docClient.send(
@@ -104,13 +104,13 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
           id: uuidv4(),
           description: `Uploaded ${fileName}`,
           timestamp: new Date().toISOString(),
-          userId,
+          user_id: userId,
         });
 
         const updatedChatbot = {
           ...chatbot,
           events,
-          updatedAt: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         };
 
         await putChatbot(updatedChatbot);
@@ -151,11 +151,11 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
         const context = result.Items[0];
 
         // Delete from S3
-        if (context.s3Key) {
+        if (context.s3_key) {
           await s3Client.send(
             new DeleteObjectCommand({
               Bucket: BUCKET_NAME,
-              Key: context.s3Key,
+              Key: context.s3_key,
             })
           );
         }
@@ -177,13 +177,13 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
           id: uuidv4(),
           description: `Deleted ${context.metadata?.filename || 'document'}`,
           timestamp: new Date().toISOString(),
-          userId,
+          user_id: userId,
         });
 
         const updatedChatbot = {
           ...chatbot,
           events,
-          updatedAt: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         };
 
         await putChatbot(updatedChatbot);
