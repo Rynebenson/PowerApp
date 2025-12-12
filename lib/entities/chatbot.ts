@@ -8,6 +8,20 @@ export interface ChatbotTheme {
   };
 }
 
+export type BedrockModel = 
+  | 'claude-3-5-haiku'
+  | 'claude-3-5-sonnet'
+  | 'claude-3-opus'
+  | 'llama-3-70b'
+  | 'llama-3-8b';
+
+export interface ChatbotEvent {
+  id: string;
+  description: string;
+  timestamp: string;
+  user_id?: string;
+}
+
 export interface Chatbot {
   pk: string; // ORG#<org_id>
   sk: string; // CHATBOT#<chatbot_id>
@@ -15,7 +29,15 @@ export interface Chatbot {
   chatbot_id: string;
   org_id: string;
   name: string;
+  description?: string;
+  system_prompt: string;
+  model: BedrockModel;
+  temperature: number;
+  max_tokens: number;
+  status: 'active' | 'inactive';
+  embed_code: string;
   theme: ChatbotTheme;
+  events: ChatbotEvent[];
   created_at: string;
   updated_at: string;
 }
