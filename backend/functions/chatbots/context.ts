@@ -63,7 +63,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
         }
 
         const contextId = uuidv4();
-        const s3Key = `chatbots/${chatbotId}/${contextId}/${fileName}`;
+        const s3Key = `chatbots/${chatbotId}/context/${contextId}/${fileName}`;
 
         // Generate presigned URL for upload
         const uploadUrl = await getSignedUrl(

@@ -12,6 +12,7 @@
   let isOpen = false;
   let messages = [];
   let sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+  let activeTab = 'home';
 
   const styles = `
     .powerapp-widget-button {
@@ -61,6 +62,55 @@
       opacity: 0;
       transform: translateY(20px) scale(0.95);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .powerapp-widget-nav {
+      display: flex;
+      border-bottom: 1px solid #e5e7eb;
+      background: white;
+    }
+    .powerapp-widget-nav-item {
+      flex: 1;
+      padding: 16px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #6b7280;
+      transition: all 0.2s;
+      border-bottom: 2px solid transparent;
+    }
+    .powerapp-widget-nav-item:hover {
+      background: #f9fafb;
+    }
+    .powerapp-widget-nav-item.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+    .powerapp-widget-nav-item svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+    .powerapp-widget-nav-item span {
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .powerapp-widget-content {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .powerapp-widget-tab {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+    }
+    .powerapp-widget-tab.active {
+      display: flex;
     }
     .powerapp-widget-container.open {
       display: flex;
@@ -312,24 +362,75 @@
       </div>
       <button class="powerapp-widget-close">✕</button>
     </div>
-    <div class="powerapp-widget-messages" id="powerapp-messages">
-      <div class="powerapp-widget-empty">
-        <div class="powerapp-widget-empty-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
-          </svg>
-        </div>
-        <div style="font-size: 15px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Welcome!</div>
-        <div style="font-size: 13px;">Ask me anything to get started</div>
-      </div>
-    </div>
-    <div class="powerapp-widget-input-container">
-      <input type="text" class="powerapp-widget-input" placeholder="Type your message..." id="powerapp-input" />
-      <button class="powerapp-widget-send" id="powerapp-send">
-        <svg viewBox="0 0 24 24">
-          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-        </svg>
+    <div class="powerapp-widget-nav">
+      <button class="powerapp-widget-nav-item active" data-tab="home">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Home</span>
       </button>
+      <button class="powerapp-widget-nav-item" data-tab="messages">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+        <span>Messages</span>
+      </button>
+      <button class="powerapp-widget-nav-item" data-tab="help">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+        <span>Help</span>
+      </button>
+      <button class="powerapp-widget-nav-item" data-tab="news">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+        <span>News</span>
+      </button>
+    </div>
+    <div class="powerapp-widget-content">
+      <div class="powerapp-widget-tab active" data-tab-content="home">
+        <div class="powerapp-widget-messages" style="flex: 1; overflow-y: auto; padding: 20px; background: #fafafa;">
+          <div class="powerapp-widget-empty">
+            <div class="powerapp-widget-empty-icon">
+              <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            </div>
+            <div style="font-size: 15px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Welcome Home!</div>
+            <div style="font-size: 13px;">Your dashboard overview</div>
+          </div>
+        </div>
+      </div>
+      <div class="powerapp-widget-tab" data-tab-content="messages">
+        <div class="powerapp-widget-messages" id="powerapp-messages">
+          <div class="powerapp-widget-empty">
+            <div class="powerapp-widget-empty-icon">
+              <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+            </div>
+            <div style="font-size: 15px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Welcome!</div>
+            <div style="font-size: 13px;">Ask me anything to get started</div>
+          </div>
+        </div>
+        <div class="powerapp-widget-input-container">
+          <input type="text" class="powerapp-widget-input" placeholder="Type your message..." id="powerapp-input" />
+          <button class="powerapp-widget-send" id="powerapp-send">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="powerapp-widget-tab" data-tab-content="help">
+        <div class="powerapp-widget-messages" style="flex: 1; overflow-y: auto; padding: 20px; background: #fafafa;">
+          <div class="powerapp-widget-empty">
+            <div class="powerapp-widget-empty-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+            </div>
+            <div style="font-size: 15px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Help Center</div>
+            <div style="font-size: 13px;">Find answers to common questions</div>
+          </div>
+        </div>
+      </div>
+      <div class="powerapp-widget-tab" data-tab-content="news">
+        <div class="powerapp-widget-messages" style="flex: 1; overflow-y: auto; padding: 20px; background: #fafafa;">
+          <div class="powerapp-widget-empty">
+            <div class="powerapp-widget-empty-icon">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+            </div>
+            <div style="font-size: 15px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Latest News</div>
+            <div style="font-size: 13px;">Stay updated with announcements</div>
+          </div>
+        </div>
+      </div>
     </div>
   `;
 
@@ -337,7 +438,7 @@
   button.className = 'powerapp-widget-button';
   button.innerHTML = `
     <svg viewBox="0 0 24 24">
-      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
     </svg>
   `;
 
@@ -348,9 +449,26 @@
     isOpen = !isOpen;
     container.classList.toggle('open', isOpen);
     button.classList.toggle('open', isOpen);
-    if (isOpen) {
+    if (isOpen && activeTab === 'messages') {
       document.getElementById('powerapp-input').focus();
     }
+  });
+
+  container.querySelectorAll('.powerapp-widget-nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const tab = item.getAttribute('data-tab');
+      activeTab = tab;
+      
+      container.querySelectorAll('.powerapp-widget-nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      
+      container.querySelectorAll('.powerapp-widget-tab').forEach(t => t.classList.remove('active'));
+      container.querySelector(`[data-tab-content="${tab}"]`).classList.add('active');
+      
+      if (tab === 'messages') {
+        document.getElementById('powerapp-input').focus();
+      }
+    });
   });
 
   container.querySelector('.powerapp-widget-close').addEventListener('click', () => {
