@@ -42,11 +42,11 @@
     }
     .powerapp-widget-container {
       position: fixed;
-      bottom: 100px;
+      bottom: 24px;
       right: 24px;
       width: 400px;
       height: 650px;
-      max-height: calc(100vh - 130px);
+      max-height: calc(100vh - 48px);
       background: white;
       border-radius: 16px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -55,14 +55,15 @@
       z-index: 9999;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       opacity: 0;
-      transform: translateY(20px) scale(0.95);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: scale(0);
+      transform-origin: bottom right;
+      transition: all 0.3s ease-out;
       overflow: hidden;
     }
     .powerapp-widget-container.open {
       display: flex;
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: scale(1);
     }
     .powerapp-widget-header {
       background: white;
@@ -309,9 +310,9 @@
     @media (max-width: 480px) {
       .powerapp-widget-container {
         width: calc(100vw - 32px);
-        height: calc(100vh - 110px);
+        height: calc(100vh - 32px);
         right: 16px;
-        bottom: 90px;
+        bottom: 16px;
       }
       .powerapp-widget-button {
         right: 16px;

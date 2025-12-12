@@ -107,7 +107,7 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
       </button>
 
       {isOpen && (
-        <div className="fixed bottom-28 right-6 w-[400px] h-[650px] bg-white rounded-2xl shadow-2xl flex flex-col z-[9999] overflow-hidden">
+        <div className="fixed bottom-6 right-6 w-[400px] h-[650px] max-h-[calc(100vh-48px)] bg-white rounded-2xl shadow-2xl flex flex-col z-[9999] overflow-hidden transition-all duration-300 ease-out origin-bottom-right scale-0 opacity-0 data-[state=open]:scale-100 data-[state=open]:opacity-100" data-state="open">
             {/* Header */}
             <div className="bg-white border-b border-gray-200 p-5 flex items-center justify-between shadow-md">
               <div className="flex-1 text-center">
