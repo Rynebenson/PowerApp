@@ -93,7 +93,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     }
 
     // Build prompt with context
-    const systemPrompt = chatbot.systemPrompt || "You are a helpful assistant.";
+    const systemPrompt = chatbot.system_prompt || "You are a helpful assistant.";
     const contextPrompt = contextChunks.length > 0
       ? `\n\nRelevant context:\n${contextChunks.join("\n\n")}`
       : "";
@@ -106,7 +106,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         { role: "user", content: message },
       ],
       temperature: chatbot.temperature || 0.7,
-      max_tokens: chatbot.maxTokens || 500,
+      max_tokens: chatbot.max_tokens || 500,
     });
 
     const response = completion.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response.";
