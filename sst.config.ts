@@ -13,6 +13,7 @@ export default $config({
   async run() {
     const GoogleClientId = new sst.Secret("GOOGLE_CLIENT_ID");
     const GoogleClientSecret = new sst.Secret("GOOGLE_CLIENT_SECRET");
+    const OpenAIApiKey = new sst.Secret("OPENAI_API_KEY");
 
     const appDataTable = new sst.aws.Dynamo("AppDataTable", {
       fields: {
@@ -30,39 +31,23 @@ export default $config({
       ttl: "ttl",
     });
 
-    // TODO: Re-enable OpenSearch and document processing when ready
-    // const vectorSearch = new sst.aws.OpenSearch("VectorSearch", {
-    //   version: "OpenSearch_2.11",
-    //   instance: "t3.small",
-    //   storage: "10 GB",
-    // });
+    // const vectorSearch = new sst.aws.OpenSearch("VectorSearch");
 
     const chatbotDocumentsBucket = new sst.aws.Bucket("ChatbotDocuments");
 
-    // TODO: Re-enable document processing when OpenSearch is ready
-    // chatbotDocumentsBucket.notify({
-    //   notifications: [
-    //     {
-    //       name: "DocumentProcessor",
-    //       function: {
-    //         handler: "backend/functions/documents/process.handler",
-    //         link: [vectorSearch, chatbotDocumentsBucket],
-    //         environment: {
-    //           OPENSEARCH_ENDPOINT: vectorSearch.url,
-    //         },
-    //         permissions: [
-    //           {
-    //             actions: ["bedrock:InvokeModel"],
-    //             resources: ["arn:aws:bedrock:*::foundation-model/amazon.titan-embed-text-v2:0"],
-    //           },
-    //         ],
-    //         architecture: "arm64",
-    //         timeout: "5 minutes",
-    //         memory: "1024 MB",
-    //       }
-    //     }
-    //   ]
-    // });
+    chatbotDocumentsBucket.subscribe({
+      handler: "backend/functions/documents/process.handler",
+      link: [chatbotDocumentsBucket, appDataTable, OpenAIApiKey],
+      environment: {
+        // OPENSEARCH_ENDPOINT: vectorSearch.url,
+        APP_DATA_TABLE: appDataTable.name,
+        DOCUMENTS_BUCKET: chatbotDocumentsBucket.name,
+        // OS_OPEN_SEARCH_USERNAME: vectorSearch.username,
+        // OS_OPEN_SEARCH_PASSWORD: vectorSearch.password,
+      },
+      timeout: "5 minutes",
+      memory: "1024 MB",
+    });
     
     const webDomain = {
       production: "powerapp.rynebenson.com",
@@ -349,7 +334,7 @@ export default $config({
 
     api.route("POST /chatbots/{chatbotId}/context", {
       handler: "backend/functions/chatbots/context.handler",
-      link: [appDataTable, chatbotDocumentsBucket],
+      link: [appDataTable, chatbotDocumentsBucket, OpenAIApiKey],
       environment: {
         APP_DATA_TABLE: appDataTable.name,
         DOCUMENTS_BUCKET: chatbotDocumentsBucket.name,
@@ -383,30 +368,16 @@ export default $config({
       auth: { jwt: { authorizer: authorizer.id } },
     });
 
-    // TODO: Re-enable chat endpoint when OpenSearch and Bedrock are ready
-    // api.route("POST /chat/{chatbotId}", {
-    //   handler: "backend/functions/chatbots/chat.handler",
-    //   link: [appDataTable, vectorSearch],
-    //   environment: {
-    //     APP_DATA_TABLE: appDataTable.name,
-    //     OPENSEARCH_ENDPOINT: vectorSearch.url,
-    //   },
-    //   permissions: [
-    //     {
-    //       actions: ["bedrock:InvokeModel"],
-    //       resources: [
-    //         "arn:aws:bedrock:*::foundation-model/amazon.titan-embed-text-v2:0",
-    //         "arn:aws:bedrock:*::foundation-model/meta.llama3-8b-instruct-v1:0",
-    //         "arn:aws:bedrock:*:*:inference-profile/*",
-    //       ],
-    //     },
-    //     {
-    //       actions: ["es:*"],
-    //       resources: [$interpolate`${vectorSearch.nodes.domain?.arn}/*`],
-    //     },
-    //   ],
-    //   architecture: "arm64",
-    // });
+    api.route("POST /chat/{chatbotId}", {
+      handler: "backend/functions/chatbots/chat.handler",
+      link: [appDataTable, OpenAIApiKey],
+      environment: {
+        APP_DATA_TABLE: appDataTable.name,
+        // OPENSEARCH_ENDPOINT: vectorSearch.url,
+      },
+      architecture: "arm64",
+      timeout: "30 seconds",
+    });
     
     const web = new sst.aws.Nextjs("MyWeb", {
       ...(webCertArn && {

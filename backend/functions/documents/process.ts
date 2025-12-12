@@ -1,220 +1,165 @@
 import { S3Event } from "aws-lambda";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { Client } from "@opensearch-project/opensearch";
-import { AwsSigv4Signer } from "@opensearch-project/opensearch/aws";
+import { OpenAIEmbeddings } from "@langchain/openai";
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import { Resource } from "sst";
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { docClient } from "../../../lib/dynamo/client";
+import pdfParse from "pdf-parse";
 
 const s3Client = new S3Client({});
-const bedrockClient = new BedrockRuntimeClient({ region: process.env.AWS_REGION });
 
-const opensearchClient = new Client({
-  ...AwsSigv4Signer({
-    region: process.env.AWS_REGION!,
-    service: "es",
-  }),
-  node: process.env.OPENSEARCH_ENDPOINT!,
-});
-
-async function ensureIndex(indexName: string) {
-  try {
-    const exists = await opensearchClient.indices.exists({ index: indexName });
-    if (!exists.body) {
-      console.log(`Creating index: ${indexName}`);
-      const result = await opensearchClient.indices.create({
-        index: indexName,
-        body: {
-          mappings: {
-            properties: {
-              vector: {
-                type: "knn_vector",
-                dimension: 1024,
-              },
-              chatbotId: { type: "keyword" },
-              contextId: { type: "keyword" },
-              chunkText: { type: "text" },
-              chunkIndex: { type: "integer" },
-              s3Key: { type: "keyword" },
-              timestamp: { type: "date" },
-            },
-          },
-          settings: {
-            "index.knn": true,
-          },
-        },
-      });
-      console.log(`Index created:`, result);
-    }
-  } catch (error) {
-    console.error(`Error ensuring index ${indexName}:`, JSON.stringify(error, null, 2));
-    throw error;
-  }
-}
+// const openSearchClient = new Client({
+//   node: Resource.VectorSearch.url,
+//   auth: {
+//     username: Resource.VectorSearch.username,
+//     password: Resource.VectorSearch.password,
+//   },
+// });
 
 export const handler = async (event: S3Event) => {
+  console.log("Processing document upload:", JSON.stringify(event, null, 2));
+
   for (const record of event.Records) {
     const bucket = record.s3.bucket.name;
     const key = decodeURIComponent(record.s3.object.key.replace(/\+/g, " "));
 
-    // Extract chatbotId and contextId from S3 key: chatbots/{chatbotId}/{contextId}/{filename}
+    // Extract chatbotId and contextId from S3 key: chatbots/{chatbotId}/context/{contextId}/{filename}
     const parts = key.split("/");
-    if (parts[0] !== "chatbots" || parts.length < 4) {
-      console.log("Skipping non-chatbot file:", key);
+    if (parts.length < 4 || parts[0] !== "chatbots" || parts[2] !== "context") {
+      console.log("Skipping non-context file:", key);
       continue;
     }
 
     const chatbotId = parts[1];
-    const contextId = parts[2];
+    const contextId = parts[3];
 
     try {
-      // 1. Download file from S3 (with retry for eventual consistency)
-      let fileBuffer: Buffer | undefined;
-      let attempts = 0;
-      const maxAttempts = 3;
-      
-      while (attempts < maxAttempts) {
-        try {
-          const getObjectResponse = await s3Client.send(
-            new GetObjectCommand({ Bucket: bucket, Key: key })
-          );
-          if (!getObjectResponse.Body) {
-            throw new Error("No body in S3 response");
-          }
-          fileBuffer = await streamToBuffer(getObjectResponse.Body);
-          break;
-        } catch (error) {
-          attempts++;
-          const errorName = error instanceof Error && 'name' in error ? (error as { name: string }).name : '';
-          if (errorName === "NoSuchKey" && attempts < maxAttempts) {
-            console.log(`File not ready, waiting... (attempt ${attempts}/${maxAttempts})`);
-            await new Promise(resolve => setTimeout(resolve, 2000));
-          } else {
-            throw error;
-          }
-        }
-      }
-      
+      // Download file from S3
+      const response = await s3Client.send(
+        new GetObjectCommand({ Bucket: bucket, Key: key })
+      );
+
+      const fileBuffer = await response.Body?.transformToByteArray();
       if (!fileBuffer) {
-        throw new Error("Failed to download file from S3");
+        throw new Error("Failed to read file from S3");
       }
 
-      // 2. Extract text
-      let text: string;
-      if (key.endsWith(".pdf")) {
-        text = await extractPdfText(fileBuffer);
-      } else {
-        text = fileBuffer.toString("utf-8");
-      }
+      // Extract text from PDF
+      const pdfData = await pdfParse(Buffer.from(fileBuffer));
+      const text = pdfData.text;
 
-      // 3. Chunk text
-      const chunks = chunkText(text, 500);
-      console.log(`Processing ${chunks.length} chunks for ${key}`);
+      // Split text into chunks
+      const splitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 1000,
+        chunkOverlap: 200,
+      });
 
-      // 4. Ensure index exists
+      const chunks = await splitter.splitText(text);
+      console.log(`Split into ${chunks.length} chunks`);
+
+      // Create embeddings
+      const embeddings = new OpenAIEmbeddings({
+        openAIApiKey: Resource.OPENAI_API_KEY.value,
+      });
+
       const indexName = `chatbot-${chatbotId}`;
-      await ensureIndex(indexName);
 
-      // 5. Generate embeddings and store in OpenSearch
+      // Create index if it doesn't exist
+
+      // const indexExists = await openSearchClient.indices.exists({ index: indexName });
+
+      // if (!indexExists.body) {
+      //   await openSearchClient.indices.create({
+      //     index: indexName,
+      //     body: {
+      //       mappings: {
+      //         properties: {
+      //           text: { type: "text" },
+      //           embedding: {
+      //             type: "knn_vector",
+      //             dimension: 1536, // OpenAI embedding dimension
+      //           },
+      //           contextId: { type: "keyword" },
+      //           chatbotId: { type: "keyword" },
+      //         },
+      //       },
+      //       settings: {
+      //         "index.knn": true,
+      //       },
+      //     },
+      //   });
+      //   console.log(`Created index: ${indexName}`);
+      //   // Wait longer for index to be ready
+      //   await new Promise(resolve => setTimeout(resolve, 5000));
+      // }
+
+      // Generate embeddings and store in OpenSearch
+      const vectorIds: string[] = [];
+      console.log(`Generating embeddings for ${chunks.length} chunks...`);
+      
       for (let i = 0; i < chunks.length; i++) {
         const chunk = chunks[i];
-        
-        // Generate embedding using Bedrock Titan
-        const embedding = await generateEmbedding(chunk);
+        console.log(`Processing chunk ${i + 1}/${chunks.length}`);
+        const embedding = await embeddings.embedQuery(chunk);
 
-        // Store in OpenSearch
-        try {
-          await opensearchClient.index({
-            index: indexName,
-            body: {
-              chatbotId,
-              contextId,
-              chunkText: chunk,
-              chunkIndex: i,
-              vector: embedding,
-              s3Key: key,
-              timestamp: new Date().toISOString(),
-            },
-          });
-        } catch (indexError) {
-          const message = indexError instanceof Error ? indexError.message : String(indexError);
-          console.error(`Error indexing chunk ${i}:`, message);
-          throw indexError;
+        const docId = `${contextId}-${i}`;
+        let retries = 3;
+        while (retries > 0) {
+          try {
+            // await openSearchClient.index({
+            //   index: indexName,
+            //   id: docId,
+            //   body: {
+            //     text: chunk,
+            //     embedding,
+            //     contextId,
+            //     chatbotId,
+            //   },
+            // });
+            // vectorIds.push(docId);
+            break;
+          } catch (err) {
+            retries--;
+            if (retries === 0) throw err;
+            console.log(`Retry indexing chunk ${i}, ${retries} retries left`);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
         }
       }
 
-      console.log(`Successfully processed ${key}`);
+      console.log(`Stored ${vectorIds.length} vectors in OpenSearch`);
+
+      // Update context metadata in DynamoDB with vectorIds
+      await docClient.send(
+        new PutCommand({
+          TableName: Resource.AppDataTable.name,
+          Item: {
+            pk: `CHATBOT#${chatbotId}`,
+            sk: `CONTEXT#${contextId}`,
+            entityType: "chatbot-context",
+            id: contextId,
+            chatbotId,
+            type: "document",
+            content: key,
+            metadata: {
+              filename: parts[parts.length - 1],
+              vectorIds,
+            },
+            createdAt: new Date().toISOString(),
+          },
+        })
+      );
+
+      console.log(`Updated context metadata for ${contextId}`);
     } catch (error) {
       console.error(`Error processing ${key}:`, error);
+      if (error && typeof error === 'object' && 'meta' in error) {
+        const opensearchError = error as { meta?: { body?: unknown } };
+        console.error('OpenSearch error details:', JSON.stringify(opensearchError.meta?.body, null, 2));
+      }
       throw error;
     }
   }
 };
-
-async function extractPdfText(buffer: Buffer): Promise<string> {
-  const pdfParse = (await import('pdf-parse')).default;
-  const data = await pdfParse(buffer);
-  return data.text;
-}
-
-async function generateEmbedding(text: string): Promise<number[]> {
-  const response = await bedrockClient.send(
-    new InvokeModelCommand({
-      modelId: "amazon.titan-embed-text-v2:0",
-      body: JSON.stringify({ inputText: text }),
-    })
-  );
-
-  const responseBody = JSON.parse(new TextDecoder().decode(response.body)) as { embedding: number[] };
-  return responseBody.embedding;
-}
-
-function chunkText(text: string, maxTokens: number): string[] {
-  // Simple chunking by characters (rough approximation: 1 token ≈ 4 chars)
-  const maxChars = maxTokens * 4;
-  const chunks: string[] = [];
-  
-  // Split by paragraphs first
-  const paragraphs = text.split(/\n\n+/);
-  let currentChunk = "";
-
-  for (const paragraph of paragraphs) {
-    if ((currentChunk + paragraph).length > maxChars) {
-      if (currentChunk) {
-        chunks.push(currentChunk.trim());
-        currentChunk = "";
-      }
-      
-      // If single paragraph is too long, split by sentences
-      if (paragraph.length > maxChars) {
-        const sentences = paragraph.match(/[^.!?]+[.!?]+/g) || [paragraph];
-        for (const sentence of sentences) {
-          if ((currentChunk + sentence).length > maxChars) {
-            if (currentChunk) chunks.push(currentChunk.trim());
-            currentChunk = sentence;
-          } else {
-            currentChunk += sentence;
-          }
-        }
-      } else {
-        currentChunk = paragraph;
-      }
-    } else {
-      currentChunk += (currentChunk ? "\n\n" : "") + paragraph;
-    }
-  }
-
-  if (currentChunk) chunks.push(currentChunk.trim());
-  return chunks.filter(c => c.length > 0);
-}
-
-async function streamToBuffer(stream: ReadableStream | Blob | AsyncIterable<Uint8Array>): Promise<Buffer> {
-  if (stream instanceof Blob) {
-    const arrayBuffer = await stream.arrayBuffer();
-    return Buffer.from(arrayBuffer);
-  }
-  
-  const chunks: Uint8Array[] = [];
-  for await (const chunk of stream as AsyncIterable<Uint8Array>) {
-    chunks.push(chunk instanceof Uint8Array ? chunk : Buffer.from(chunk));
-  }
-  return Buffer.concat(chunks);
-}
