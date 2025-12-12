@@ -38,7 +38,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
 
       case "POST": {
         const body = JSON.parse(event.body || "{}");
-        const { name, description, model, systemPrompt, temperature, maxTokens } = body;
+        const { name, description, model, system_prompt, temperature, max_tokens } = body;
 
         if (!name || !model) {
           return {
@@ -51,24 +51,31 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
         const embedCode = `<script>(function(){var s=document.createElement('script');s.src='https://powerapp.rynebenson.com/widget.js';s.setAttribute('data-chatbot-id','${chatbotId}');s.async=true;document.head.appendChild(s);})();</script>`;
 
         const chatbot: Chatbot = {
-          id: chatbotId,
-          orgId,
+          pk: `ORG#${orgId}`,
+          sk: `CHATBOT#${chatbotId}`,
+          entity_type: 'chatbot',
+          chatbot_id: chatbotId,
+          org_id: orgId,
           name,
           description: description || "",
-          systemPrompt: systemPrompt || "You are a helpful assistant.",
+          system_prompt: system_prompt || "You are a helpful assistant.",
           model,
           temperature: temperature || 0.7,
-          maxTokens: maxTokens || 2000,
+          max_tokens: max_tokens || 2000,
           status: "active",
-          embedCode,
+          embed_code: embedCode,
+          theme: {
+            primary_color: '#6366f1',
+            gradient_enabled: false,
+          },
           events: [{
             id: uuidv4(),
             description: "Chatbot created",
             timestamp: new Date().toISOString(),
-            userId,
+            user_id: userId,
           }],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         };
 
         await putChatbot(chatbot);

@@ -26,7 +26,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
         }
 
         // Fetch user details for events
-        const userIds = [...new Set(chatbot.events?.map(e => e.userId).filter(Boolean) || [])];
+        const userIds = [...new Set(chatbot.events?.map(e => e.user_id).filter(Boolean) || [])];
         const users = await Promise.all(
           userIds.map(async (userId) => {
             const user = await getUser(userId!);
@@ -63,7 +63,7 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
             id: uuidv4(),
             description: `Chatbot model updated to ${body.model}`,
             timestamp: new Date().toISOString(),
-            userId,
+            user_id: userId,
           });
         }
         
@@ -73,17 +73,17 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
             id: uuidv4(),
             description: `Chatbot status changed to ${body.status}`,
             timestamp: new Date().toISOString(),
-            userId,
+            user_id: userId,
           });
         }
         
         // Track system prompt changes
-        if (body.systemPrompt !== undefined && body.systemPrompt !== chatbot.systemPrompt) {
+        if (body.system_prompt !== undefined && body.system_prompt !== chatbot.system_prompt) {
           events.push({
             id: uuidv4(),
             description: "System prompt updated",
             timestamp: new Date().toISOString(),
-            userId,
+            user_id: userId,
           });
         }
         
@@ -93,29 +93,29 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (event) 
             id: uuidv4(),
             description: `Temperature updated to ${body.temperature}`,
             timestamp: new Date().toISOString(),
-            userId,
+            user_id: userId,
           });
         }
         
-        // Track maxTokens changes
-        if (body.maxTokens !== undefined && body.maxTokens !== chatbot.maxTokens) {
+        // Track max_tokens changes
+        if (body.max_tokens !== undefined && body.max_tokens !== chatbot.max_tokens) {
           events.push({
             id: uuidv4(),
-            description: `Max tokens updated to ${body.maxTokens}`,
+            description: `Max tokens updated to ${body.max_tokens}`,
             timestamp: new Date().toISOString(),
-            userId,
+            user_id: userId,
           });
         }
 
         const updatedChatbot = {
           ...chatbot,
           ...body,
-          id: chatbot.id,
-          orgId: chatbot.orgId,
-          embedCode: chatbot.embedCode,
+          chatbot_id: chatbot.chatbot_id,
+          org_id: chatbot.org_id,
+          embed_code: chatbot.embed_code,
           events,
-          createdAt: chatbot.createdAt,
-          updatedAt: new Date().toISOString(),
+          created_at: chatbot.created_at,
+          updated_at: new Date().toISOString(),
         };
 
         await putChatbot(updatedChatbot);
