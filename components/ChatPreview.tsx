@@ -107,11 +107,11 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
       </button>
 
       {isOpen && (
-        <div className="fixed bottom-28 right-6 w-[400px] h-[650px] bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl flex flex-col z-[9999] overflow-hidden">
+        <div className="fixed bottom-28 right-6 w-[400px] h-[650px] bg-white rounded-2xl shadow-2xl flex flex-col z-[9999] overflow-hidden">
             {/* Header */}
-            <div className="bg-white dark:bg-zinc-900 border-b dark:border-zinc-800 p-5 flex items-center justify-between shadow-md">
+            <div className="bg-white border-b border-gray-200 p-5 flex items-center justify-between shadow-md">
               <div className="flex-1 text-center">
-                <div className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <div className="text-lg font-semibold text-gray-900">
                   {activeTab === 'home' && 'Chat Support'}
                   {activeTab === 'messages' && 'Messages'}
                   {activeTab === 'help' && 'Help'}
@@ -120,7 +120,7 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-9 h-9 rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-full text-slate-500 hover:bg-slate-100 flex items-center justify-center transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -130,12 +130,12 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
             <div className="flex-1 overflow-hidden">
               {/* Home Tab */}
               {activeTab === 'home' && (
-                <div className="h-full flex items-center justify-center p-8 bg-gray-50 dark:bg-zinc-950">
+                <div className="h-full flex items-center justify-center p-8 bg-white">
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                       <PiHouseLineFill className="w-8 h-8 text-white" />
                     </div>
-                    <div className="text-[15px] font-medium text-gray-900 dark:text-gray-100 mb-1">Welcome Home!</div>
+                    <div className="text-[15px] font-medium text-gray-900 mb-1">Welcome Home!</div>
                     <div className="text-xs text-gray-500">Your dashboard overview</div>
                   </div>
                 </div>
@@ -144,13 +144,13 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
               {/* Messages Tab */}
               {activeTab === 'messages' && (
                 <div className="h-full flex flex-col">
-                  <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50 dark:bg-zinc-950">
+                  <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-white">
                     {messages.length === 0 && (
                       <div className="text-center py-8">
                         <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                           <MessageCircle className="w-8 h-8 text-white" />
                         </div>
-                        <div className="text-[15px] font-medium text-gray-900 dark:text-gray-100 mb-1">Welcome!</div>
+                        <div className="text-[15px] font-medium text-gray-900 mb-1">Welcome!</div>
                         <div className="text-xs text-gray-500">Ask me anything to get started</div>
                       </div>
                     )}
@@ -163,7 +163,7 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
                           className={`max-w-[80%] rounded-2xl p-3 shadow-sm ${
                             msg.role === 'user'
                               ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-br-sm'
-                              : 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 rounded-bl-sm border dark:border-zinc-700'
+                              : 'bg-gray-50 text-gray-900 rounded-bl-sm border border-gray-200'
                           }`}
                         >
                           <div className="text-sm leading-relaxed">
@@ -178,7 +178,7 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
                     ))}
                     {loading && (
                       <div className="flex justify-start">
-                        <div className="bg-white dark:bg-zinc-800 rounded-2xl p-3 border dark:border-zinc-700">
+                        <div className="bg-gray-50 rounded-2xl p-3 border border-gray-200">
                           <div className="flex gap-1">
                             <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0s' }} />
                             <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0.2s' }} />
@@ -189,7 +189,7 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
                     )}
                     <div ref={messagesEndRef} />
                   </div>
-                  <div className="p-5 border-t dark:border-zinc-800">
+                  <div className="p-5 border-t border-gray-200">
                     <div className="flex gap-2">
                       <Input
                         value={input}
@@ -197,7 +197,7 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
                         onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                         placeholder="Type your message..."
                         disabled={loading}
-                        className="flex-1 rounded-full border-2 focus:border-indigo-500 bg-gray-50 dark:bg-zinc-950"
+                        className="flex-1 rounded-full border-2 focus:border-indigo-500 bg-gray-50"
                       />
                       <Button
                         onClick={sendMessage}
@@ -213,12 +213,12 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
 
               {/* Help Tab */}
               {activeTab === 'help' && (
-                <div className="h-full flex items-center justify-center p-8 bg-gray-50 dark:bg-zinc-950">
+                <div className="h-full flex items-center justify-center p-8 bg-white">
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                       <PiQuestionFill className="w-8 h-8 text-white" />
                     </div>
-                    <div className="text-[15px] font-medium text-gray-900 dark:text-gray-100 mb-1">Help Center</div>
+                    <div className="text-[15px] font-medium text-gray-900 mb-1">Help Center</div>
                     <div className="text-xs text-gray-500">Find answers to common questions</div>
                   </div>
                 </div>
@@ -226,12 +226,12 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
 
               {/* News Tab */}
               {activeTab === 'news' && (
-                <div className="h-full flex items-center justify-center p-8 bg-gray-50 dark:bg-zinc-950">
+                <div className="h-full flex items-center justify-center p-8 bg-white">
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                       <PiMegaphoneFill className="w-8 h-8 text-white" />
                     </div>
-                    <div className="text-[15px] font-medium text-gray-900 dark:text-gray-100 mb-1">Latest News</div>
+                    <div className="text-[15px] font-medium text-gray-900 mb-1">Latest News</div>
                     <div className="text-xs text-gray-500">Stay updated with announcements</div>
                   </div>
                 </div>
@@ -239,13 +239,13 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
             </div>
 
             {/* Navigation */}
-            <div className="flex border-t dark:border-zinc-800">
+            <div className="flex border-t border-gray-200">
               <button
                 onClick={() => setActiveTab('home')}
                 className={`flex-1 py-4 flex flex-col items-center gap-1 transition-colors ${
                   activeTab === 'home'
                     ? 'text-indigo-500'
-                    : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-zinc-800'
+                    : 'text-gray-500 hover:bg-gray-50'
                 }`}
               >
                 {activeTab === 'home' ? <PiHouseLineFill className="w-7 h-7" /> : <PiHouseLine className="w-7 h-7" />}
@@ -256,7 +256,7 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
                 className={`flex-1 py-4 flex flex-col items-center gap-1 transition-colors ${
                   activeTab === 'messages'
                     ? 'text-indigo-500'
-                    : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-zinc-800'
+                    : 'text-gray-500 hover:bg-gray-50'
                 }`}
               >
                 {activeTab === 'messages' ? <PiChatCircleDotsFill className="w-7 h-7" /> : <PiChatCircleDots className="w-7 h-7" />}
@@ -267,7 +267,7 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
                 className={`flex-1 py-4 flex flex-col items-center gap-1 transition-colors ${
                   activeTab === 'help'
                     ? 'text-indigo-500'
-                    : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-zinc-800'
+                    : 'text-gray-500 hover:bg-gray-50'
                 }`}
               >
                 {activeTab === 'help' ? <PiQuestionFill className="w-7 h-7" /> : <PiQuestion className="w-7 h-7" />}
@@ -278,7 +278,7 @@ export default function ChatPreview({ chatbotId, chatbotName }: ChatPreviewProps
                 className={`flex-1 py-4 flex flex-col items-center gap-1 transition-colors ${
                   activeTab === 'news'
                     ? 'text-indigo-500'
-                    : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-zinc-800'
+                    : 'text-gray-500 hover:bg-gray-50'
                 }`}
               >
                 {activeTab === 'news' ? <PiMegaphoneFill className="w-7 h-7" /> : <PiMegaphone className="w-7 h-7" />}
